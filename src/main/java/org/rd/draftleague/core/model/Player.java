@@ -1,7 +1,8 @@
-package org.rd.draftleague.core.models;
+package org.rd.draftleague.core.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
 @Table(name = "players")
 public class Player implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
@@ -92,16 +93,11 @@ public class Player implements Serializable {
     }
 
     public Player(String name, String email, Date startDate) {
-        this.name = name;
-        this.email = email;
-        this.startDate = startDate;
+        this(name, "", email, startDate);
     }
 
     public Player(String name, String nickName, String email, Date startDate) {
-        this.name = name;
-        this.nickName = nickName;
-        this.email = email;
-        this.startDate = startDate;
+        this(name, nickName, email, startDate, new ArrayList<>());
     }
 
     public Player(String name, String nickName, String email, Date startDate, List<League> leagues) {
@@ -114,6 +110,7 @@ public class Player implements Serializable {
 
     public void joinLeague(League leagueToJoin){
         this.getLeagues().add(leagueToJoin);
+        leagueToJoin.addPlayer(this);
     }
 
     public void copyPlayerValues(Player playerToCopyFrom){

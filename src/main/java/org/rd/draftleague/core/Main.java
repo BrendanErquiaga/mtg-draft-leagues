@@ -1,36 +1,105 @@
 package org.rd.draftleague.core;
 
-import org.rd.draftleague.core.models.League;
-import org.rd.draftleague.core.models.Player;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.rd.draftleague.core.model.League;
+import org.rd.draftleague.core.model.Player;
 
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaQuery;
 import java.util.Date;
 import java.util.List;
 
 public class Main {
 
-    private static final EntityManagerFactory ENTITY_MANAGER_FACTORY = Persistence
-            .createEntityManagerFactory("mtg_draft_leagues");
-
     public static void main(String[] args) {
-        createObjectInDatabase(new Player("Bob","bob@gmail.com",new Date()));
-        createObjectInDatabase(new Player("Alice","alice@gmail.com",new Date()));
-        createObjectInDatabase(new Player("Jane","jane@gmail.com",new Date()));
+        EntityManager entityManager = HibernateUtil.getEntityManagerFactory().createEntityManager();
 
-        createObjectInDatabase(new League("EDH Draft League", new Date()));
-        createObjectInDatabase(new League("HyperCube Draft League", new Date()));
+        try {
+            Session session = entityManager.unwrap(Session.class);
 
-        Player somePlayer = selectPlayerFromDatabase(1);
-        League someLeague = selectLeagueFromDatabase(4);
-        somePlayer.joinLeague(someLeague);
-        someLeague.addPlayer(somePlayer);
+            createBasicData(session);
+            listAllData(session);
 
-        updateObjectInDatabase(somePlayer,somePlayer.getId(),Player.class);
-        updateObjectInDatabase(someLeague,someLeague.getId(),League.class);
+            Player p1 = getPlayerById(session, 1);
+            League l1 = getLeagueById(session, 1);
 
-        List<Player> players = selectAllPlayers();
+            if(p1 != null && l1 != null){
+                p1.joinLeague(l1);
+                saveEntity(session, p1);
+                saveEntity(session, l1);
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~");
+                listAllData(session);
+            }
+
+            session.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            HibernateUtil.shutdown();
+        }
+    }
+
+    private static <T> void saveEntity(Session session, T entity) {
+        Transaction transaction = session.beginTransaction();
+
+        session.persist(entity);
+
+        transaction.commit();
+    }
+
+    private static Player getPlayerById(Session session, int playerId) {
+        Transaction transaction = session.beginTransaction();
+
+        Player fetchedPlayer = session.get(Player.class, playerId);
+
+        transaction.commit();
+
+        return fetchedPlayer;
+    }
+
+    private static League getLeagueById(Session session, int leagueId) {
+        Transaction transaction = session.beginTransaction();
+
+        League fetchedLeague = session.get(League.class, leagueId);
+
+        transaction.commit();
+
+        return fetchedLeague;
+    }
+
+    private static <T> Object getEntityById(Session session, T entityType, int entityId) {
+        Transaction transaction = session.beginTransaction();
+
+        Object fetchedEntity = session.get(entityType.getClass(), entityId);
+
+        transaction.commit();
+
+        return fetchedEntity;
+    }
+
+
+    private static void createBasicData(Session session) {
+        Transaction transaction = session.beginTransaction();
+
+        session.save(new Player("Bob","bob@gmail.com",new Date()));
+        session.save(new Player("Alice","alice@gmail.com",new Date()));
+        session.save(new Player("Jane","jane@gmail.com",new Date()));
+
+        session.save(new League("EDH Draft League", new Date()));
+        session.save(new League("HyperCube Draft League", new Date()));
+
+        transaction.commit();
+    }
+
+    private static void listAllData(Session session) {
+        Transaction transaction = session.beginTransaction();
+
+        CriteriaQuery<Player> criteriaQuery = session.getCriteriaBuilder().createQuery(Player.class);
+        criteriaQuery.from(Player.class);
+        List<Player> players = session.createQuery(criteriaQuery).getResultList();
 
         if(players != null) {
             for(Player player : players) {
@@ -38,7 +107,9 @@ public class Main {
             }
         }
 
-        List<League> leagues = selectAllLeagues();
+        CriteriaQuery<League> leagueCriteriaQuery = session.getCriteriaBuilder().createQuery(League.class);
+        leagueCriteriaQuery.from(League.class);
+        List<League> leagues = session.createQuery(leagueCriteriaQuery).getResultList();
 
         if(leagues != null) {
             for(League league : leagues) {
@@ -46,186 +117,20 @@ public class Main {
             }
         }
 
-        ENTITY_MANAGER_FACTORY.close();
+        transaction.commit();
     }
 
-    private static void createObjectInDatabase(Serializable object) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
+    private static <T> void listEntityData(Session session, T entity) {
+        Transaction transaction = session.beginTransaction();
 
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
+        CriteriaQuery<T> criteriaQuery = session.getCriteriaBuilder().createQuery((Class<T>) entity.getClass());
+        criteriaQuery.from(entity.getClass());
+        List<T> entities = session.createQuery(criteriaQuery).getResultList();
 
-            manager.persist(object);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-    }
-
-    private static <T> void deleteObjectInDatabase(T objectType, int objectId) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            Object foundObject = manager.find(objectType.getClass(),objectId);
-            manager.remove(foundObject);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-    }
-
-    private static <T> void updateObjectInDatabase(T object, int objectId, T objectType) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            manager.merge(object);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-    }
-
-    private static List<Player> selectAllPlayers() {
-        return selectAll(Player.class, Player.class.getName());
-    }
-
-    private static List<League> selectAllLeagues() {
-        return selectAll(League.class, League.class.getName());
-    }
-
-    private static Player selectPlayerFromDatabase(int playerId) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        Player player = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            player = manager.find(Player.class, playerId);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
+        if(entities != null) {
+            System.out.println(entities.toString());
         }
 
-        return player;
-    }
-
-    private static League selectLeagueFromDatabase(int leagueId) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        League league = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            league = manager.find(League.class, leagueId);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-
-        return league;
-    }
-
-    private static <T extends Serializable> T selectObjectFromDatabase(Class objectType, int objectId){
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        T objectToSelect = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            Object foundObject = manager.find(objectType.getClass(),objectId);
-            objectToSelect = (T) foundObject;
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-
-        return objectToSelect;
-    }
-
-    private static <T> List<T> selectAll(Class objectType, String tableName){
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        List<T> objects = new ArrayList<>();
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            objects = (List<T>) manager.createQuery(String.format("SELECT s FROM %s s",tableName)).getResultList();
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-
-        return objects;
+        transaction.commit();
     }
 }
