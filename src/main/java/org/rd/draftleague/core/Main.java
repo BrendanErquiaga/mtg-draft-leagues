@@ -27,8 +27,8 @@ public class Main {
         somePlayer.joinLeague(someLeague);
         someLeague.addPlayer(somePlayer);
 
-        updatePlayerInDatabase(somePlayer,somePlayer.getId());
-        updateLeagueInDatabase(someLeague, someLeague.getId());
+        updateObjectInDatabase(somePlayer,somePlayer.getId(),Player.class);
+        updateObjectInDatabase(someLeague,someLeague.getId(),League.class);
 
         List<Player> players = selectAllPlayers();
 
@@ -94,55 +94,6 @@ public class Main {
         }
     }
 
-    private static void updatePlayerInDatabase(Player player, int playerId) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            Player existingPlayer = manager.find(Player.class, playerId);
-            existingPlayer.copyPlayerValues(player);
-            manager.persist(existingPlayer);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-    }
-
-    private static void updateLeagueInDatabase(League league, int leagueId) {
-        EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
-        EntityTransaction transaction = null;
-
-        try {
-            transaction = manager.getTransaction();
-            transaction.begin();
-
-            League existingLeague = manager.find(League.class, leagueId);
-            existingLeague.copyLeagueValues(league);
-            manager.persist(existingLeague);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if(transaction != null) {
-                transaction.rollback();
-            }
-
-            e.printStackTrace();
-        } finally {
-            manager.close();
-        }
-    }
-
-
     private static <T> void updateObjectInDatabase(T object, int objectId, T objectType) {
         EntityManager manager = ENTITY_MANAGER_FACTORY.createEntityManager();
         EntityTransaction transaction = null;
@@ -151,7 +102,7 @@ public class Main {
             transaction = manager.getTransaction();
             transaction.begin();
 
-            manager.persist(object);
+            manager.merge(object);
 
             transaction.commit();
         } catch (Exception e) {

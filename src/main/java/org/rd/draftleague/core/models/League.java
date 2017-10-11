@@ -60,9 +60,10 @@ public class League implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", startDate=" + startDate +
-                ", players=" + players +
+                ", players=" + players.size() +
                 '}';
     }
+
 
     public League() {
     }
