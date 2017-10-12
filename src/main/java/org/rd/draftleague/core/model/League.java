@@ -23,6 +23,9 @@ public class League implements Serializable {
     @ManyToMany(mappedBy = "leagues", fetch = FetchType.EAGER)
     private List<Player> players;
 
+    @OneToMany(mappedBy = "league")
+    private List<Draft> drafts;
+
     public int getId() {
         return id;
     }
@@ -55,6 +58,14 @@ public class League implements Serializable {
         this.players = players;
     }
 
+    public List<Draft> getDrafts() {
+        return drafts;
+    }
+
+    public void setDrafts(List<Draft> drafts) {
+        this.drafts = drafts;
+    }
+
     @Override
     public String toString() {
         return "League{" +
@@ -62,9 +73,9 @@ public class League implements Serializable {
                 ", name='" + name + '\'' +
                 ", startDate=" + startDate +
                 ", players=" + players.size() +
+                ", drafts=" + drafts.size() +
                 '}';
     }
-
 
     public League() {
     }
@@ -77,15 +88,20 @@ public class League implements Serializable {
         this.name = name;
         this.startDate = startDate;
         this.players = players;
+        this.drafts = new ArrayList<>();
     }
 
     public void addPlayer(Player player) {
         this.getPlayers().add(player);
+    }
+    public void addDraft(Draft draft) {
+        this.getDrafts().add(draft);
     }
 
     public void copyLeagueValues(League league) {
         this.name = league.getName();
         this.startDate = league.getStartDate();
         this.players = league.getPlayers();
+        this.drafts = league.getDrafts();
     }
 }

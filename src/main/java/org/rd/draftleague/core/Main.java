@@ -1,12 +1,12 @@
 package org.rd.draftleague.core;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.rd.draftleague.core.model.Draft;
 import org.rd.draftleague.core.model.League;
 import org.rd.draftleague.core.model.Player;
+import org.rd.draftleague.core.utils.HibernateUtil;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.Date;
@@ -23,12 +23,14 @@ public class Main {
             createBasicData(session);
             listAllData(session);
 
-            Player p1 = getPlayerById(session, 1);
+            Player p2 = getPlayerById(session, 2);
             League l1 = getLeagueById(session, 1);
+            Draft d1 = getDraftById(session, 1);
 
-            if(p1 != null && l1 != null){
-                p1.joinLeague(l1);
-                saveEntity(session, p1);
+            if(p2 != null && l1 != null && d1 != null){
+                p2.joinLeague(l1);
+                p2.joinDraft(d1);
+                saveEntity(session, p2);
                 saveEntity(session, l1);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~");
                 listAllData(session);
@@ -70,6 +72,16 @@ public class Main {
         return fetchedLeague;
     }
 
+    private static Draft getDraftById(Session session, int draftId) {
+        Transaction transaction = session.beginTransaction();
+
+        Draft fetchedDraft = session.get(Draft.class, draftId);
+
+        transaction.commit();
+
+        return fetchedDraft;
+    }
+
     private static <T> Object getEntityById(Session session, T entityType, int entityId) {
         Transaction transaction = session.beginTransaction();
 
@@ -84,12 +96,24 @@ public class Main {
     private static void createBasicData(Session session) {
         Transaction transaction = session.beginTransaction();
 
-        session.save(new Player("Bob","bob@gmail.com",new Date()));
+        Player firstPlayer = new Player("Bob","bob@gmail.com",new Date());
+        League firstLeague = new League("EDH Draft League", new Date());
+        League secondLeague = new League("HyperCube Draft League", new Date());
+        Draft firstDraft = new Draft("2017 Draft", new Date(), firstLeague);
+        firstLeague.addDraft(firstDraft);
+        firstPlayer.joinLeague(firstLeague);
+        firstPlayer.joinDraft(firstDraft);
+
+        session.save(firstPlayer);
         session.save(new Player("Alice","alice@gmail.com",new Date()));
         session.save(new Player("Jane","jane@gmail.com",new Date()));
 
-        session.save(new League("EDH Draft League", new Date()));
-        session.save(new League("HyperCube Draft League", new Date()));
+
+        session.save(firstLeague);
+        session.save(secondLeague);
+
+        session.save(firstDraft);
+        session.save(new Draft("HyberCube Draft", new Date(), secondLeague));
 
         transaction.commit();
     }
@@ -114,6 +138,16 @@ public class Main {
         if(leagues != null) {
             for(League league : leagues) {
                 System.out.println(league.toString());
+            }
+        }
+
+        CriteriaQuery<Draft> draftCriteriaQuery = session.getCriteriaBuilder().createQuery(Draft.class);
+        draftCriteriaQuery.from(Draft.class);
+        List<Draft> drafts = session.createQuery(draftCriteriaQuery).getResultList();
+
+        if(drafts != null) {
+            for(Draft draft : drafts) {
+                System.out.println(draft.toString());
             }
         }
 

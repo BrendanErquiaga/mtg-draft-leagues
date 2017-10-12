@@ -1,4 +1,4 @@
-package org.rd.draftleague.core;
+package org.rd.draftleague.core.utils;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;

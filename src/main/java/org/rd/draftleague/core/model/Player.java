@@ -29,6 +29,9 @@ public class Player implements Serializable {
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private List<League> leagues;
 
+    @ManyToMany(mappedBy = "draftPlayers")
+    private List<Draft> drafts;
+
     public int getId() {
         return id;
     }
@@ -77,6 +80,14 @@ public class Player implements Serializable {
         this.leagues = leagues;
     }
 
+    public List<Draft> getDrafts() {
+        return drafts;
+    }
+
+    public void setDrafts(List<Draft> drafts) {
+        this.drafts = drafts;
+    }
+
     @Override
     public String toString() {
         return "Player{" +
@@ -85,7 +96,8 @@ public class Player implements Serializable {
                 ", nickName='" + nickName + '\'' +
                 ", email='" + email + '\'' +
                 ", startDate=" + startDate +
-                ", leagues=" + leagues +
+                ", leagues=" + leagues.size() +
+                ", drafts=" + drafts.size() +
                 '}';
     }
 
@@ -101,16 +113,29 @@ public class Player implements Serializable {
     }
 
     public Player(String name, String nickName, String email, Date startDate, List<League> leagues) {
+        this(name, nickName, email, startDate, leagues, new ArrayList<>());
+    }
+
+    public Player(String name, String nickName, String email, Date startDate, List<League> leagues, List<Draft> drafts) {
         this.name = name;
         this.nickName = nickName;
         this.email = email;
         this.startDate = startDate;
         this.leagues = leagues;
+        this.drafts = drafts;
     }
 
     public void joinLeague(League leagueToJoin){
         this.getLeagues().add(leagueToJoin);
         leagueToJoin.addPlayer(this);
+    }
+
+    public void joinDraft(Draft draftToJoin){
+        this.getDrafts().add(draftToJoin);
+        draftToJoin.addPlayer(this);
+
+        //TODO Only let this happen if they are in the same league as the draft
+        //TODO Or auto-join the league if that feature is enabled
     }
 
     public void copyPlayerValues(Player playerToCopyFrom){
