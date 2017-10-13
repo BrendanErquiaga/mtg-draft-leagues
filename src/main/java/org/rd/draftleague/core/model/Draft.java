@@ -25,7 +25,7 @@ public class Draft implements Serializable {
     @ManyToOne
     private League league;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     private DraftFormat draftFormat;
 
     @Column(nullable = false, columnDefinition = "int default 0")
@@ -42,6 +42,28 @@ public class Draft implements Serializable {
 
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private List<Player> draftPlayers;
+
+    public Draft() { }
+
+    public Draft(String name, League league) {
+        this(name, new Date(), league);
+    }
+
+    public Draft(String name, Date startDate, League league) {
+        this(name, startDate, league, DraftFormat.ROTISSERIE_ROTATING_SNAKE);
+    }
+
+    public Draft(String name, Date startDate, League league, DraftFormat draftFormat) {
+        this(name, startDate, league, draftFormat, new ArrayList<>());
+    }
+
+    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers) {
+        this.name = name;
+        this.startDate = startDate;
+        this.league = league;
+        this.draftFormat = draftFormat;
+        this.draftPlayers = draftPlayers;
+    }
 
     public int getId() {
         return id;
@@ -67,13 +89,9 @@ public class Draft implements Serializable {
         this.startDate = startDate;
     }
 
-    public League getLeague() {
-        return league;
-    }
+    public League getLeague() { return league; }
 
-    public void setLeague(League league) {
-        this.league = league;
-    }
+    public void setLeague(League league) { this.league = league; }
 
     public DraftFormat getDraftFormat() {
         return draftFormat;
@@ -115,13 +133,9 @@ public class Draft implements Serializable {
         this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
     }
 
-    public List<Player> getDraftPlayers() {
-        return draftPlayers;
-    }
+    public List<Player> getDraftPlayers() { return draftPlayers; }
 
-    public void setDraftPlayers(List<Player> draftPlayers) {
-        this.draftPlayers = draftPlayers;
-    }
+    public void setDraftPlayers(List<Player> draftPlayers) { this.draftPlayers = draftPlayers; }
 
     @Override
     public String toString() {
@@ -137,29 +151,6 @@ public class Draft implements Serializable {
                 ", turnOrderMovingTowardsDoublePick=" + turnOrderMovingTowardsDoublePick +
                 ", draftPlayers=" + draftPlayers.size() +
                 '}';
-    }
-
-    public Draft() {
-    }
-
-    public Draft(String name, League league) {
-        this(name, new Date(), league);
-    }
-
-    public Draft(String name, Date startDate, League league) {
-        this(name, startDate, league, DraftFormat.ROTISSERIE_ROTATING_SNAKE);
-    }
-
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat) {
-        this(name, startDate, league, draftFormat, new ArrayList<>());
-    }
-
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers) {
-        this.name = name;
-        this.startDate = startDate;
-        this.league = league;
-        this.draftFormat = draftFormat;
-        this.draftPlayers = draftPlayers;
     }
 
     public void addPlayer(Player player) {

@@ -26,6 +26,20 @@ public class League implements Serializable {
     @OneToMany(mappedBy = "league")
     private List<Draft> drafts;
 
+    public League() {
+    }
+
+    public League(String name, Date startDate) {
+        this(name, startDate, new ArrayList<>());
+    }
+
+    public League(String name, Date startDate, List<Player> players) {
+        this.name = name;
+        this.startDate = startDate;
+        this.players = players;
+        this.drafts = new ArrayList<>();
+    }
+
     public int getId() {
         return id;
     }
@@ -77,23 +91,10 @@ public class League implements Serializable {
                 '}';
     }
 
-    public League() {
-    }
-
-    public League(String name, Date startDate) {
-        this(name, startDate, new ArrayList<>());
-    }
-
-    public League(String name, Date startDate, List<Player> players) {
-        this.name = name;
-        this.startDate = startDate;
-        this.players = players;
-        this.drafts = new ArrayList<>();
-    }
-
     public void addPlayer(Player player) {
         this.getPlayers().add(player);
     }
+
     public void addDraft(Draft draft) {
         this.getDrafts().add(draft);
     }

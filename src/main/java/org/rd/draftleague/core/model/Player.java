@@ -32,6 +32,29 @@ public class Player implements Serializable {
     @ManyToMany(mappedBy = "draftPlayers")
     private List<Draft> drafts;
 
+    public Player() { }
+
+    public Player(String name, String email, Date startDate) {
+        this(name, "", email, startDate);
+    }
+
+    public Player(String name, String nickName, String email, Date startDate) {
+        this(name, nickName, email, startDate, new ArrayList<>());
+    }
+
+    public Player(String name, String nickName, String email, Date startDate, List<League> leagues) {
+        this(name, nickName, email, startDate, leagues, new ArrayList<>());
+    }
+
+    public Player(String name, String nickName, String email, Date startDate, List<League> leagues, List<Draft> drafts) {
+        this.name = name;
+        this.nickName = nickName;
+        this.email = email;
+        this.startDate = startDate;
+        this.leagues = leagues;
+        this.drafts = drafts;
+    }
+
     public int getId() {
         return id;
     }
@@ -101,36 +124,12 @@ public class Player implements Serializable {
                 '}';
     }
 
-    public Player() {
-    }
-
-    public Player(String name, String email, Date startDate) {
-        this(name, "", email, startDate);
-    }
-
-    public Player(String name, String nickName, String email, Date startDate) {
-        this(name, nickName, email, startDate, new ArrayList<>());
-    }
-
-    public Player(String name, String nickName, String email, Date startDate, List<League> leagues) {
-        this(name, nickName, email, startDate, leagues, new ArrayList<>());
-    }
-
-    public Player(String name, String nickName, String email, Date startDate, List<League> leagues, List<Draft> drafts) {
-        this.name = name;
-        this.nickName = nickName;
-        this.email = email;
-        this.startDate = startDate;
-        this.leagues = leagues;
-        this.drafts = drafts;
-    }
-
-    public void joinLeague(League leagueToJoin){
+    public void joinLeague(League leagueToJoin) {
         this.getLeagues().add(leagueToJoin);
         leagueToJoin.addPlayer(this);
     }
 
-    public void joinDraft(Draft draftToJoin){
+    public void joinDraft(Draft draftToJoin) {
         this.getDrafts().add(draftToJoin);
         draftToJoin.addPlayer(this);
 
@@ -138,7 +137,7 @@ public class Player implements Serializable {
         //TODO Or auto-join the league if that feature is enabled
     }
 
-    public void copyPlayerValues(Player playerToCopyFrom){
+    public void copyPlayerValues(Player playerToCopyFrom) {
         this.name = playerToCopyFrom.getName();
         this.nickName = playerToCopyFrom.getNickName();
         this.email = playerToCopyFrom.getEmail();
