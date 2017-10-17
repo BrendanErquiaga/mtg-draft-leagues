@@ -2,13 +2,13 @@ package org.rd.draftleague.core;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.rd.draftleague.core.model.Draft;
-import org.rd.draftleague.core.model.League;
-import org.rd.draftleague.core.model.Player;
+import org.rd.draftleague.core.model.*;
 import org.rd.draftleague.core.utils.HibernateUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,25 +22,80 @@ public class Main {
 
             createBasicData(session);
             listAllData(session);
-
-            Player p2 = getPlayerById(session, 2);
-            League l1 = getLeagueById(session, 1);
-            Draft d1 = getDraftById(session, 1);
-
-            if(p2 != null && l1 != null && d1 != null){
-                p2.joinLeague(l1);
-                p2.joinDraft(d1);
-                saveEntity(session, p2);
-                saveEntity(session, l1);
-                System.out.println("~~~~~~~~~~~~~~~~~~~~~~");
-                listAllData(session);
-            }
+            modifyBasicData(session);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~");
+            listAllData(session);
 
             session.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             HibernateUtil.shutdown();
+        }
+    }
+
+    private static void createBasicData(Session session) {
+        Transaction transaction = session.beginTransaction();
+
+        Player firstPlayer = new Player("Bob","bob@gmail.com",new Date());
+        League firstLeague = new League("EDH Draft League", new Date());
+        League secondLeague = new League("HyperCube Draft League", new Date());
+        Draft firstDraft = new Draft("2017 Draft", new Date(), firstLeague);
+        CardList firstCardList = getFirstCardList(session);
+        firstDraft.setCardList(firstCardList);
+        firstLeague.addDraft(firstDraft);
+        firstPlayer.joinLeague(firstLeague);
+        firstPlayer.joinDraft(firstDraft);
+
+        session.save(firstPlayer);
+        session.save(new Player("Alice","alice@gmail.com",new Date()));
+        session.save(new Player("Jane","jane@gmail.com",new Date()));
+
+        session.save(firstLeague);
+        session.save(secondLeague);
+
+        session.save(firstDraft);
+        session.save(new Draft("HyberCube Draft", new Date(), secondLeague));
+
+        session.save(firstCardList);
+        session.save(new CardList("Empty List", new Date()));
+
+        transaction.commit();
+    }
+
+    private static CardList getFirstCardList(Session session) {
+        List<Card> cards = new ArrayList<>();
+        Card tutor = new Card("Mystical Tutor", 1);
+        Card manaDrain = new Card("Mana Drain", 2);
+        Card showAndTell = new Card("Show and Tell", 3);
+        Card factOrFiction = new Card("Fact or Fiction", 4);
+        Card forceOfWill = new Card("Force of Will", 4);
+        cards.add(tutor);
+        cards.add(manaDrain);
+        cards.add(showAndTell);
+        cards.add(factOrFiction);
+        cards.add(forceOfWill);
+
+        session.save(tutor);
+        session.save(manaDrain);
+        session.save(showAndTell);
+        session.save(factOrFiction);
+        session.save(forceOfWill);
+
+        //return new CardList("First Card List", new Date());
+        return new CardList("First Card List", new Date(), cards);
+    }
+
+    private static void modifyBasicData(Session session) {
+        Player p2 = getPlayerById(session, 2);
+        League l1 = getLeagueById(session, 1);
+        Draft d1 = getDraftById(session, 1);
+
+        if(p2 != null && l1 != null && d1 != null) {
+            p2.joinLeague(l1);
+            p2.joinDraft(d1);
+            saveEntity(session, p2);
+            saveEntity(session, l1);
         }
     }
 
@@ -93,30 +148,7 @@ public class Main {
     }
 
 
-    private static void createBasicData(Session session) {
-        Transaction transaction = session.beginTransaction();
 
-        Player firstPlayer = new Player("Bob","bob@gmail.com",new Date());
-        League firstLeague = new League("EDH Draft League", new Date());
-        League secondLeague = new League("HyperCube Draft League", new Date());
-        Draft firstDraft = new Draft("2017 Draft", new Date(), firstLeague);
-        firstLeague.addDraft(firstDraft);
-        firstPlayer.joinLeague(firstLeague);
-        firstPlayer.joinDraft(firstDraft);
-
-        session.save(firstPlayer);
-        session.save(new Player("Alice","alice@gmail.com",new Date()));
-        session.save(new Player("Jane","jane@gmail.com",new Date()));
-
-
-        session.save(firstLeague);
-        session.save(secondLeague);
-
-        session.save(firstDraft);
-        session.save(new Draft("HyberCube Draft", new Date(), secondLeague));
-
-        transaction.commit();
-    }
 
     private static void listAllData(Session session) {
         Transaction transaction = session.beginTransaction();

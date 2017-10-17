@@ -10,6 +10,7 @@
         <class>org.rd.draftleague.core.model.Player</class>
         <class>org.rd.draftleague.core.model.League</class>
         <class>org.rd.draftleague.core.model.Draft</class>
+        <class>org.rd.draftleague.core.model.CardList</class>
 
         <properties>
             <!-- The JDBC URL to the database instance -->

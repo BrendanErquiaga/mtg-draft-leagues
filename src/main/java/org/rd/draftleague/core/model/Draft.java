@@ -28,6 +28,12 @@ public class Draft implements Serializable {
     @Enumerated(EnumType.STRING)
     private DraftFormat draftFormat;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean turnOrderMovingTowardsDoublePick;
+
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    private List<Player> draftPlayers;
+
     @Column(nullable = false, columnDefinition = "int default 0")
     private int draftedCardsCount;
 
@@ -37,11 +43,8 @@ public class Draft implements Serializable {
     @Column(nullable = false, columnDefinition = "int default 0")
     private int pickCount;
 
-    @Column(nullable = false, columnDefinition = "boolean default true")
-    private boolean turnOrderMovingTowardsDoublePick;
-
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private List<Player> draftPlayers;
+    @ManyToOne
+    private CardList cardList;
 
     public Draft() { }
 
@@ -58,11 +61,16 @@ public class Draft implements Serializable {
     }
 
     public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers) {
+        this(name, startDate, league, draftFormat, draftPlayers, null);
+    }
+
+    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers, CardList cardList) {
         this.name = name;
         this.startDate = startDate;
         this.league = league;
         this.draftFormat = draftFormat;
         this.draftPlayers = draftPlayers;
+        this.cardList = cardList;
     }
 
     public int getId() {
@@ -137,6 +145,35 @@ public class Draft implements Serializable {
 
     public void setDraftPlayers(List<Player> draftPlayers) { this.draftPlayers = draftPlayers; }
 
+    public CardList getCardList() {
+        return cardList;
+    }
+
+    public String getCardListName() {
+        return (getCardList() != null) ? getCardList().getName() : "";
+    }
+
+    public void setCardList(CardList cardList) {
+        this.cardList = cardList;
+    }
+
+//    @Override
+//    public String toString() {
+//        return "Draft{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", startDate=" + startDate +
+//                ", league=" + league +
+//                ", draftFormat=" + draftFormat +
+//                ", draftedCardsCount=" + draftedCardsCount +
+//                ", roundNumber=" + roundNumber +
+//                ", pickCount=" + pickCount +
+//                ", turnOrderMovingTowardsDoublePick=" + turnOrderMovingTowardsDoublePick +
+//                ", draftPlayers=" + draftPlayers.size() +
+//                '}';
+//    }
+
+
     @Override
     public String toString() {
         return "Draft{" +
@@ -149,7 +186,8 @@ public class Draft implements Serializable {
                 ", roundNumber=" + roundNumber +
                 ", pickCount=" + pickCount +
                 ", turnOrderMovingTowardsDoublePick=" + turnOrderMovingTowardsDoublePick +
-                ", draftPlayers=" + draftPlayers.size() +
+                ", draftPlayers=" + draftPlayers +
+                ", cardList=" + getCardListName() +
                 '}';
     }
 
@@ -158,6 +196,5 @@ public class Draft implements Serializable {
     }
 
 
-    //    private CardList cardList;
     //    private CardList banList;
 }
