@@ -44,7 +44,7 @@ public class Draft implements Serializable {
     private int pickCount;
 
     @ManyToOne
-    private CardList cardList;
+    private CardList banList;
 
     public Draft() { }
 
@@ -64,13 +64,13 @@ public class Draft implements Serializable {
         this(name, startDate, league, draftFormat, draftPlayers, null);
     }
 
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers, CardList cardList) {
+    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers, CardList banList) {
         this.name = name;
         this.startDate = startDate;
         this.league = league;
         this.draftFormat = draftFormat;
         this.draftPlayers = draftPlayers;
-        this.cardList = cardList;
+        this.banList = banList;
     }
 
     public int getId() {
@@ -145,34 +145,17 @@ public class Draft implements Serializable {
 
     public void setDraftPlayers(List<Player> draftPlayers) { this.draftPlayers = draftPlayers; }
 
-    public CardList getCardList() {
-        return cardList;
+    public CardList getBanList() {
+        return banList;
     }
 
-    public String getCardListName() {
-        return (getCardList() != null) ? getCardList().getName() : "";
+    public String getBanListName() {
+        return (getBanList() != null) ? getBanList().getName() : "";
     }
 
-    public void setCardList(CardList cardList) {
-        this.cardList = cardList;
+    public void setBanList(CardList banList) {
+        this.banList = banList;
     }
-
-//    @Override
-//    public String toString() {
-//        return "Draft{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", startDate=" + startDate +
-//                ", league=" + league +
-//                ", draftFormat=" + draftFormat +
-//                ", draftedCardsCount=" + draftedCardsCount +
-//                ", roundNumber=" + roundNumber +
-//                ", pickCount=" + pickCount +
-//                ", turnOrderMovingTowardsDoublePick=" + turnOrderMovingTowardsDoublePick +
-//                ", draftPlayers=" + draftPlayers.size() +
-//                '}';
-//    }
-
 
     @Override
     public String toString() {
@@ -187,14 +170,11 @@ public class Draft implements Serializable {
                 ", pickCount=" + pickCount +
                 ", turnOrderMovingTowardsDoublePick=" + turnOrderMovingTowardsDoublePick +
                 ", draftPlayers=" + draftPlayers +
-                ", cardList=" + getCardListName() +
+                ", banList=" + getBanListName() +
                 '}';
     }
 
     public void addPlayer(Player player) {
         this.getDraftPlayers().add(player);
     }
-
-
-    //    private CardList banList;
 }

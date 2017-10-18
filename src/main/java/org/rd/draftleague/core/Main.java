@@ -7,7 +7,6 @@ import org.rd.draftleague.core.utils.HibernateUtil;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaQuery;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +41,7 @@ public class Main {
         League secondLeague = new League("HyperCube Draft League", new Date());
         Draft firstDraft = new Draft("2017 Draft", new Date(), firstLeague);
         CardList firstCardList = getFirstCardList(session);
-        firstDraft.setCardList(firstCardList);
+        firstDraft.setBanList(firstCardList);
         firstLeague.addDraft(firstDraft);
         firstPlayer.joinLeague(firstLeague);
         firstPlayer.joinDraft(firstDraft);
@@ -65,24 +64,34 @@ public class Main {
 
     private static CardList getFirstCardList(Session session) {
         List<Card> cards = new ArrayList<>();
-        Card tutor = new Card("Mystical Tutor", 1);
+        Card solring = new Card("Sol Ring", 1);
+        solring.setColorlessColor(true);
+        solring.setArtifactType(true);
         Card manaDrain = new Card("Mana Drain", 2);
-        Card showAndTell = new Card("Show and Tell", 3);
-        Card factOrFiction = new Card("Fact or Fiction", 4);
-        Card forceOfWill = new Card("Force of Will", 4);
-        cards.add(tutor);
+        manaDrain.setBlueColor(true);
+        manaDrain.setInstantType(true);
+        Card tinker = new Card("Tinker", 3);
+        tinker.setBlueColor(true);
+        tinker.setSorceryType(true);
+        Card jace = new Card("Jace, the Mind Sculptor", 4);
+        jace.setBlueColor(true);
+        jace.setPlaneswalkerType(true);
+        jace.setLegendaryType(true);
+        Card fow = new Card("Force of Will", 4);
+        fow.setBlueColor(true);
+        fow.setInstantType(true);
+        cards.add(solring);
         cards.add(manaDrain);
-        cards.add(showAndTell);
-        cards.add(factOrFiction);
-        cards.add(forceOfWill);
+        cards.add(tinker);
+        cards.add(jace);
+        cards.add(fow);
 
-        session.save(tutor);
+        session.save(solring);
         session.save(manaDrain);
-        session.save(showAndTell);
-        session.save(factOrFiction);
-        session.save(forceOfWill);
+        session.save(tinker);
+        session.save(jace);
+        session.save(fow);
 
-        //return new CardList("First Card List", new Date());
         return new CardList("First Card List", new Date(), cards);
     }
 
