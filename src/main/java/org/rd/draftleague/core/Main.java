@@ -108,13 +108,7 @@ public class Main {
         }
     }
 
-    private static <T> void saveEntity(Session session, T entity) {
-        Transaction transaction = session.beginTransaction();
 
-        session.persist(entity);
-
-        transaction.commit();
-    }
 
     private static Player getPlayerById(Session session, int playerId) {
         Transaction transaction = session.beginTransaction();
@@ -145,19 +139,6 @@ public class Main {
 
         return fetchedDraft;
     }
-
-    private static <T> Object getEntityById(Session session, T entityType, int entityId) {
-        Transaction transaction = session.beginTransaction();
-
-        Object fetchedEntity = session.get(entityType.getClass(), entityId);
-
-        transaction.commit();
-
-        return fetchedEntity;
-    }
-
-
-
 
     private static void listAllData(Session session) {
         Transaction transaction = session.beginTransaction();
@@ -191,6 +172,24 @@ public class Main {
                 System.out.println(draft.toString());
             }
         }
+
+        transaction.commit();
+    }
+
+    private static <T> Object getEntityById(Session session, T entityType, int entityId) {
+        Transaction transaction = session.beginTransaction();
+
+        Object fetchedEntity = session.get(entityType.getClass(), entityId);
+
+        transaction.commit();
+
+        return fetchedEntity;
+    }
+
+    private static <T> void saveEntity(Session session, T entity) {
+        Transaction transaction = session.beginTransaction();
+
+        session.persist(entity);
 
         transaction.commit();
     }
