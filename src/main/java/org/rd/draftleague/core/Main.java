@@ -96,9 +96,9 @@ public class Main {
     }
 
     private static void modifyBasicData(Session session) {
-        Player p2 = getPlayerById(session, 2);
-        League l1 = getLeagueById(session, 1);
-        Draft d1 = getDraftById(session, 1);
+        Player p2 = getEntityById(session, Player.class, 2);
+        League l1 = getEntityById(session, League.class,1);
+        Draft d1 = getEntityById(session, Draft.class, 1);
 
         if(p2 != null && l1 != null && d1 != null) {
             p2.joinLeague(l1);
@@ -106,38 +106,6 @@ public class Main {
             saveEntity(session, p2);
             saveEntity(session, l1);
         }
-    }
-
-
-
-    private static Player getPlayerById(Session session, int playerId) {
-        Transaction transaction = session.beginTransaction();
-
-        Player fetchedPlayer = session.get(Player.class, playerId);
-
-        transaction.commit();
-
-        return fetchedPlayer;
-    }
-
-    private static League getLeagueById(Session session, int leagueId) {
-        Transaction transaction = session.beginTransaction();
-
-        League fetchedLeague = session.get(League.class, leagueId);
-
-        transaction.commit();
-
-        return fetchedLeague;
-    }
-
-    private static Draft getDraftById(Session session, int draftId) {
-        Transaction transaction = session.beginTransaction();
-
-        Draft fetchedDraft = session.get(Draft.class, draftId);
-
-        transaction.commit();
-
-        return fetchedDraft;
     }
 
     private static void listAllData(Session session) {
@@ -176,10 +144,10 @@ public class Main {
         transaction.commit();
     }
 
-    private static <T> Object getEntityById(Session session, T entityType, int entityId) {
+    private static <T> T getEntityById(Session session, Class<T> entityType, int entityId) {
         Transaction transaction = session.beginTransaction();
 
-        Object fetchedEntity = session.get(entityType.getClass(), entityId);
+        T fetchedEntity = session.get(entityType, entityId);
 
         transaction.commit();
 
