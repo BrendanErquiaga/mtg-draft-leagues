@@ -1,5 +1,7 @@
 package org.rd.draftleague.core.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,11 +22,13 @@ public class League implements Serializable {
     @Column(name = "startDate", nullable = false)
     private Date startDate;
 
-//    @ManyToMany(mappedBy = "leagues", fetch = FetchType.EAGER)
-//    private List<Player> players;
-//
-//    @OneToMany(mappedBy = "league")
-//    private List<Draft> drafts;
+    @ManyToMany(mappedBy = "leagues", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"leagues", "drafts"})
+    private List<Player> players;
+
+    @OneToMany(mappedBy = "league")
+    @JsonIgnoreProperties({"league", "draftPlayers", "banList"})
+    private List<Draft> drafts;
 
     public League() {
     }
@@ -36,8 +40,8 @@ public class League implements Serializable {
     public League(String name, Date startDate, List<Player> players) {
         this.name = name;
         this.startDate = startDate;
-//        this.players = players;
-//        this.drafts = new ArrayList<>();
+        this.players = players;
+        this.drafts = new ArrayList<>();
     }
 
     public Long getId() {
@@ -64,45 +68,45 @@ public class League implements Serializable {
         this.startDate = startDate;
     }
 
-//    public List<Player> getPlayers() {
-//        return players;
-//    }
-//
-//    public void setPlayers(List<Player> players) {
-//        this.players = players;
-//    }
-//
-//    public List<Draft> getDrafts() {
-//        return drafts;
-//    }
-//
-//    public void setDrafts(List<Draft> drafts) {
-//        this.drafts = drafts;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "League{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", startDate=" + startDate +
-//                ", players=" + players.size() +
-//                ", drafts=" + drafts.size() +
-//                '}';
-//    }
-//
-//    public void addPlayer(Player player) {
-//        this.getPlayers().add(player);
-//    }
-//
-//    public void addDraft(Draft draft) {
-//        this.getDrafts().add(draft);
-//    }
-//
-//    public void copyLeagueValues(League league) {
-//        this.name = league.getName();
-//        this.startDate = league.getStartDate();
-//        this.players = league.getPlayers();
-//        this.drafts = league.getDrafts();
-//    }
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    public List<Draft> getDrafts() {
+        return drafts;
+    }
+
+    public void setDrafts(List<Draft> drafts) {
+        this.drafts = drafts;
+    }
+
+    @Override
+    public String toString() {
+        return "League{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", startDate=" + startDate +
+                ", players=" + players.size() +
+                ", drafts=" + drafts.size() +
+                '}';
+    }
+
+    public void addPlayer(Player player) {
+        this.getPlayers().add(player);
+    }
+
+    public void addDraft(Draft draft) {
+        this.getDrafts().add(draft);
+    }
+
+    public void copyLeagueValues(League league) {
+        this.name = league.getName();
+        this.startDate = league.getStartDate();
+        this.players = league.getPlayers();
+        this.drafts = league.getDrafts();
+    }
 }
