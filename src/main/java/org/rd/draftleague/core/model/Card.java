@@ -10,7 +10,7 @@ public class Card implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cardId")
-    private int cardId;
+    private Long cardId;
 
     @Column(name = "cardName", nullable = false)
     private String name;
@@ -96,11 +96,11 @@ public class Card implements Serializable {
         this.colorlessColor = colorlessColor;
     }
 
-    public int getCardId() {
+    public Long getCardId() {
         return cardId;
     }
 
-    public void setCardId(int cardId) {
+    public void setCardId(Long cardId) {
         this.cardId = cardId;
     }
 
