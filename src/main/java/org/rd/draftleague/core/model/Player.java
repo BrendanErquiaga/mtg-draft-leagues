@@ -8,11 +8,19 @@ import java.util.List;
 
 @Entity
 @Table(name = "players")
+@NamedQueries({
+        @NamedQuery(name = "org.rd.draftleague.core.model.Player.findAll",
+                query = "select e from Player e"),
+        @NamedQuery(name = "org.rd.draftleague.core.model.Player.findByName",
+                query = "select e from Player e "
+                        + "where e.name like :name "
+                        + "or e.nickName like :name")
+})
 public class Player implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "playerName", nullable = false)
     private String name;
@@ -26,11 +34,11 @@ public class Player implements Serializable {
     @Column(name = "startDate", nullable = false)
     private Date startDate;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
-    private List<League> leagues;
-
-    @ManyToMany(mappedBy = "draftPlayers")
-    private List<Draft> drafts;
+//    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+//    private List<League> leagues;
+//
+//    @ManyToMany(mappedBy = "draftPlayers")
+//    private List<Draft> drafts;
 
     public Player() { }
 
@@ -51,15 +59,15 @@ public class Player implements Serializable {
         this.nickName = nickName;
         this.email = email;
         this.startDate = startDate;
-        this.leagues = leagues;
-        this.drafts = drafts;
+//        this.leagues = leagues;
+//        this.drafts = drafts;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -95,22 +103,6 @@ public class Player implements Serializable {
         this.startDate = startDate;
     }
 
-    public List<League> getLeagues() {
-        return leagues;
-    }
-
-    public void setLeagues(List<League> leagues) {
-        this.leagues = leagues;
-    }
-
-    public List<Draft> getDrafts() {
-        return drafts;
-    }
-
-    public void setDrafts(List<Draft> drafts) {
-        this.drafts = drafts;
-    }
-
     @Override
     public String toString() {
         return "Player{" +
@@ -119,29 +111,56 @@ public class Player implements Serializable {
                 ", nickName='" + nickName + '\'' +
                 ", email='" + email + '\'' +
                 ", startDate=" + startDate +
-                ", leagues=" + leagues.size() +
-                ", drafts=" + drafts.size() +
                 '}';
     }
 
-    public void joinLeague(League leagueToJoin) {
-        this.getLeagues().add(leagueToJoin);
-        leagueToJoin.addPlayer(this);
-    }
-
-    public void joinDraft(Draft draftToJoin) {
-        this.getDrafts().add(draftToJoin);
-        draftToJoin.addPlayer(this);
-
-        //TODO Only let this happen if they are in the same league as the draft
-        //TODO Or auto-join the league if that feature is enabled
-    }
-
-    public void copyPlayerValues(Player playerToCopyFrom) {
-        this.name = playerToCopyFrom.getName();
-        this.nickName = playerToCopyFrom.getNickName();
-        this.email = playerToCopyFrom.getEmail();
-        this.startDate = playerToCopyFrom.getStartDate();
-        this.leagues = playerToCopyFrom.getLeagues();
-    }
+    //    public List<League> getLeagues() {
+//        return leagues;
+//    }
+//
+//    public void setLeagues(List<League> leagues) {
+//        this.leagues = leagues;
+//    }
+//
+//    public List<Draft> getDrafts() {
+//        return drafts;
+//    }
+//
+//    public void setDrafts(List<Draft> drafts) {
+//        this.drafts = drafts;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "Player{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", nickName='" + nickName + '\'' +
+//                ", email='" + email + '\'' +
+//                ", startDate=" + startDate +
+//                ", leagues=" + leagues.size() +
+//                ", drafts=" + drafts.size() +
+//                '}';
+//    }
+//
+//    public void joinLeague(League leagueToJoin) {
+//        this.getLeagues().add(leagueToJoin);
+//        leagueToJoin.addPlayer(this);
+//    }
+//
+//    public void joinDraft(Draft draftToJoin) {
+//        this.getDrafts().add(draftToJoin);
+//        draftToJoin.addPlayer(this);
+//
+//        //TODO Only let this happen if they are in the same league as the draft
+//        //TODO Or auto-join the league if that feature is enabled
+//    }
+//
+//    public void copyPlayerValues(Player playerToCopyFrom) {
+//        this.name = playerToCopyFrom.getName();
+//        this.nickName = playerToCopyFrom.getNickName();
+//        this.email = playerToCopyFrom.getEmail();
+//        this.startDate = playerToCopyFrom.getStartDate();
+//        this.leagues = playerToCopyFrom.getLeagues();
+//    }
 }
