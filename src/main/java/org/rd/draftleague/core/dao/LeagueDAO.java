@@ -22,4 +22,14 @@ public class LeagueDAO extends AbstractDAO<League> {
     public League create(League league) {
         return persist(league);
     }
+
+    public Optional<League> update(Long id, League league) {
+        Optional<League> existingLeague = findById(id);
+        existingLeague.ifPresent(league1 -> league1.update(league));
+        return existingLeague;
+    }
+
+    public void delete(League league) {
+        currentSession().delete(league);
+    }
 }

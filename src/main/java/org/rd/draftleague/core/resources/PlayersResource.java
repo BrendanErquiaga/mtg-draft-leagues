@@ -7,6 +7,7 @@ import org.rd.draftleague.core.model.Player;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +42,28 @@ public class PlayersResource {
     @UnitOfWork
     public Player createPlayer(Player player) {
         return playerDAO.create(player);
+    }
+
+    @PUT
+    @Path("/{id}")
+    @UnitOfWork
+    public Player update(@PathParam("id") LongParam id, Player player) {
+        return playerDAO.update(id.get(), player)
+                .orElseThrow(() ->
+                        new WebApplicationException("Player not found", 404));
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @UnitOfWork
+    public Response delete(@PathParam("id") LongParam id) {
+        Optional<Player> player = findById(id);
+
+        if(player.isPresent()) {
+            playerDAO.delete(player.get());
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

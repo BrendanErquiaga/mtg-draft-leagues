@@ -101,4 +101,12 @@ public class League implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name, startDate);
     }
+
+    public League update(League league) {
+        this.name = league.getName();
+        this.players = league.getPlayers();
+        this.drafts = league.getDrafts();
+
+        return this;
+    }
 }

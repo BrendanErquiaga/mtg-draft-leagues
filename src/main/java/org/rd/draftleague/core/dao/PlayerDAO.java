@@ -38,4 +38,14 @@ public class PlayerDAO extends AbstractDAO<Player> {
     public Player create(Player player) {
         return persist(player);
     }
+
+    public Optional<Player> update(Long id, Player player) {
+        Optional<Player> existingPlayer = findById(id);
+        existingPlayer.ifPresent(player1 -> player1.update(player));
+        return existingPlayer;
+    }
+
+    public void delete(Player player) {
+        currentSession().delete(player);
+    }
 }

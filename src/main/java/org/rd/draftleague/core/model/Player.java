@@ -132,4 +132,14 @@ public class Player implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name, startDate);
     }
+
+    public Player update(Player player) {
+        this.name = player.getName();
+        this.nickName = player.getNickName();
+        this.email = player.getEmail();
+        this.leagues = player.getLeagues();
+        this.drafts = player.getDrafts();
+
+        return this;
+    }
 }

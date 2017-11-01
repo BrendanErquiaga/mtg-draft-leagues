@@ -266,4 +266,28 @@ public class Card implements Serializable {
     public int hashCode() {
         return Objects.hash(cardId, name, convertedManaCost);
     }
+
+    public Card update(Card card) {
+        this.name = card.getName();
+        this.convertedManaCost = card.getConvertedManaCost();
+        this.manaCostString = card.getManaCostString();
+        this.fullCardTypeString = card.getFullCardTypeString();
+        this.artifactType = card.isArtifactType();
+        this.creatureType = card.isCreatureType();
+        this.instantType = card.isInstantType();
+        this.enchantmentType = card.isEnchantmentType();
+        this.landType = card.isLandType();
+        this.legendaryType = card.isLegendaryType();
+        this.planeswalkerType = card.isPlaneswalkerType();
+        this.sorceryType = card.isSorceryType();
+        this.tribalType = card.isTribalType();
+        this.whiteColor = card.isWhiteColor();
+        this.blueColor = card.isBlueColor();
+        this.blackColor = card.isBlackColor();
+        this.redColor = card.isRedColor();
+        this.greenColor = card.isGreenColor();
+        this.colorlessColor = card.isColorlessColor();
+
+        return this;
+    }
 }

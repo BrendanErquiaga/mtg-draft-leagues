@@ -114,4 +114,11 @@ public class CardList implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name, listCreationDate);
     }
+
+    public CardList update(CardList cardList) {
+        this.name = cardList.getName();
+        this.cards = cardList.getCards();
+
+        return this;
+    }
 }

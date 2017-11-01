@@ -4,10 +4,10 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.LeagueDAO;
 import org.rd.draftleague.core.model.League;
-import org.rd.draftleague.core.model.Player;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,5 +37,28 @@ public class LeaguesResource {
         return leagueDAO.create(league);
     }
 
-    //TODO Figure out how to add individual items, players, drafts etc
+    @PUT
+    @Path("/{id}")
+    @UnitOfWork
+    public League update(@PathParam("id") LongParam id, League league) {
+        return leagueDAO.update(id.get(), league)
+                .orElseThrow(() ->
+                        new WebApplicationException("League not found", 404));
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @UnitOfWork
+    public Response delete(@PathParam("id") LongParam id) {
+        Optional<League> league = findById(id);
+
+        if(league.isPresent()) {
+            leagueDAO.delete(league.get());
+            return Response.ok().build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    //TODO Add paths to update individual items
 }

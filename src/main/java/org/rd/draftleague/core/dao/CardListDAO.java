@@ -23,4 +23,14 @@ public class CardListDAO extends AbstractDAO<CardList> {
     public CardList create(CardList cardList) {
         return persist(cardList);
     }
+
+    public Optional<CardList> update(Long id, CardList cardList) {
+        Optional<CardList> existingCardList = findById(id);
+        existingCardList.ifPresent(cardList1 -> cardList1.update(cardList));
+        return existingCardList;
+    }
+
+    public void delete(CardList cardList) {
+        currentSession().delete(cardList);
+    }
 }
