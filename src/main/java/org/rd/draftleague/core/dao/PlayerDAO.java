@@ -34,4 +34,8 @@ public class PlayerDAO extends AbstractDAO<Player> {
     public Optional<Player> findById(long id) {
         return Optional.ofNullable(get(id));
     }
+
+    public Player create(Player player) {
+        return persist(player);
+    }
 }

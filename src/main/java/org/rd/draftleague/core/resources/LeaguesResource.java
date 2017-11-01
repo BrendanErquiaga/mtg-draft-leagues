@@ -4,11 +4,9 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.LeagueDAO;
 import org.rd.draftleague.core.model.League;
+import org.rd.draftleague.core.model.Player;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.Optional;
@@ -32,4 +30,12 @@ public class LeaguesResource {
     public Optional<League> findById(@PathParam("id")LongParam id) {
         return leagueDAO.findById(id.get());
     }
+
+    @POST
+    @UnitOfWork
+    public League createLeague(League league) {
+        return leagueDAO.create(league);
+    }
+
+    //TODO Figure out how to add individual items, players, drafts etc
 }

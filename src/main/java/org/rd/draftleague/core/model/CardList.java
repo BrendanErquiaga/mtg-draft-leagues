@@ -19,7 +19,7 @@ public class CardList implements Serializable {
     @Column(name = "cardlistName", nullable = false)
     private String name;
 
-    @Column(name = "listCreationDate", nullable = false)
+    @Column(name = "listCreationDate")
     private Date listCreationDate;
 
     @ManyToMany
@@ -77,6 +77,7 @@ public class CardList implements Serializable {
     }
 
     public CardList() {
+        this.listCreationDate = new Date();
     }
 
     public CardList(String name, Date listCreationDate, List<Card> cards) {

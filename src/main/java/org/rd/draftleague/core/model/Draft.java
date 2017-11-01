@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "drafts")
@@ -21,7 +22,7 @@ public class Draft implements Serializable {
     @Column(name = "draftName", nullable = false)
     private String name;
 
-    @Column(name = "startDate", nullable = false)
+    @Column(name = "startDate")
     private Date startDate;
 
     @ManyToOne
@@ -52,6 +53,7 @@ public class Draft implements Serializable {
     private CardList banList;
 
     public Draft() {
+        this.startDate = new Date();
     }
 
     public Draft(String name, Date startDate, League league, DraftFormat draftFormat, boolean turnOrderMovingTowardsDoublePick, List<Player> draftPlayers, int draftedCardsCount, int roundNumber, int pickCount, CardList banList) {
@@ -153,5 +155,25 @@ public class Draft implements Serializable {
 
     public void setBanList(CardList banList) {
         this.banList = banList;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+
+        if(!(o instanceof Draft)) {
+            return false;
+        }
+
+        final Draft that = (Draft) o;
+
+        return Objects.equals(this.hashCode(), that.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, startDate);
     }
 }

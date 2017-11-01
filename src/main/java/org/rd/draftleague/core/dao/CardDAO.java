@@ -19,4 +19,8 @@ public class CardDAO extends AbstractDAO<Card> {
     public Optional<Card> findById(long id) {
         return Optional.ofNullable(get(id));
     }
+
+    public Card create(Card card) {
+        return persist(card);
+    }
 }

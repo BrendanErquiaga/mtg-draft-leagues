@@ -36,4 +36,10 @@ public class PlayersResource {
     public Optional<Player> findById(@PathParam("id") LongParam id) {
         return playerDAO.findById(id.get());
     }
+
+    @POST
+    @UnitOfWork
+    public Player createPlayer(Player player) {
+        return playerDAO.create(player);
+    }
 }

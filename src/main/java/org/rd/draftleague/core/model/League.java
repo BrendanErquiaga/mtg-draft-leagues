@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "leagues")
@@ -19,7 +20,7 @@ public class League implements Serializable {
     @Column(name = "leagueName", nullable = false)
     private String name;
 
-    @Column(name = "startDate", nullable = false)
+    @Column(name = "startDate")
     private Date startDate;
 
     @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY)
@@ -31,6 +32,7 @@ public class League implements Serializable {
     private List<Draft> drafts;
 
     public League() {
+        this.startDate = new Date();
     }
 
     public League(String name, Date startDate, List<Player> players, List<Draft> drafts) {
@@ -78,5 +80,25 @@ public class League implements Serializable {
 
     public void setDrafts(List<Draft> drafts) {
         this.drafts = drafts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+
+        if(!(o instanceof League)) {
+            return false;
+        }
+
+        final League that = (League) o;
+
+        return Objects.equals(this.hashCode(), that.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, startDate);
     }
 }

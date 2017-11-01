@@ -6,16 +6,17 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "players")
 @NamedQueries({
         @NamedQuery(name = "org.rd.draftleague.core.model.Player.findAll",
-                query = "select e from Player e"),
+                query = "select p from Player p"),
         @NamedQuery(name = "org.rd.draftleague.core.model.Player.findByName",
-                query = "select e from Player e "
-                        + "where e.name like :name "
-                        + "or e.nickName like :name")
+                query = "select p from Player p "
+                        + "where p.name like :name "
+                        + "or p.nickName like :name")
 })
 public class Player implements Serializable {
     @Id
@@ -32,7 +33,7 @@ public class Player implements Serializable {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "startDate", nullable = false)
+    @Column(name = "startDate")
     private Date startDate;
 
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
@@ -44,9 +45,10 @@ public class Player implements Serializable {
     private List<Draft> drafts;
 
     public Player() {
+        this.startDate = new Date();
     }
 
-    public Player(String name, String nickName, String email, Date startDate, List<League> leagues, List<Draft> drafts) {
+    public Player(String name, String nickName, Date startDate, String email, List<League> leagues, List<Draft> drafts) {
         this.name = name;
         this.nickName = nickName;
         this.email = email;
@@ -109,5 +111,25 @@ public class Player implements Serializable {
 
     public void setDrafts(List<Draft> drafts) {
         this.drafts = drafts;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+
+        if(!(o instanceof Player)) {
+            return false;
+        }
+
+        final Player that = (Player) o;
+
+        return Objects.equals(this.hashCode(), that.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, startDate);
     }
 }

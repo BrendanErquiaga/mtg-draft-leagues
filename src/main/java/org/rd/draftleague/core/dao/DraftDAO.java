@@ -21,4 +21,8 @@ public class DraftDAO extends AbstractDAO<Draft> {
     public Optional<Draft> findById(long id) {
         return Optional.ofNullable(get(id));
     }
+
+    public Draft create(Draft draft) {
+        return persist(draft);
+    }
 }

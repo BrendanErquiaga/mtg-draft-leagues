@@ -18,4 +18,8 @@ public class LeagueDAO extends AbstractDAO<League> {
     public Optional<League> findById(long id) {
         return Optional.ofNullable(get(id));
     }
+
+    public League create(League league) {
+        return persist(league);
+    }
 }
