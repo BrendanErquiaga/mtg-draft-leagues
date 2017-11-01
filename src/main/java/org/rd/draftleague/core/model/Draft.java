@@ -176,4 +176,18 @@ public class Draft implements Serializable {
     public int hashCode() {
         return Objects.hash(id, name, startDate);
     }
+
+    public Draft updateDraft(Draft draft) {
+        this.name = draft.getName();
+        this.league = draft.getLeague();
+        this.draftFormat = draft.getDraftFormat();
+        this.turnOrderMovingTowardsDoublePick = draft.isTurnOrderMovingTowardsDoublePick();
+        this.draftPlayers = draft.getDraftPlayers();
+        this.draftedCardsCount = draft.getDraftedCardsCount();
+        this.roundNumber = draft.getRoundNumber();
+        this.pickCount = draft.getPickCount();
+        this.banList = draft.getBanList();
+
+        return this;
+    }
 }

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cardlists")
@@ -92,5 +93,25 @@ public class CardList implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+
+        if(!(o instanceof CardList)) {
+            return false;
+        }
+
+        final CardList that = (CardList) o;
+
+        return Objects.equals(this.hashCode(), that.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, listCreationDate);
     }
 }

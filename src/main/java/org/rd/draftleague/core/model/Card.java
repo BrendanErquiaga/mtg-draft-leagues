@@ -2,6 +2,7 @@ package org.rd.draftleague.core.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cards")
@@ -244,5 +245,25 @@ public class Card implements Serializable {
         return "Card{" +
                 "cardId=" + cardId +
                 ", name='" + name + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+
+        if(!(o instanceof Card)) {
+            return false;
+        }
+
+        final Card that = (Card) o;
+
+        return Objects.equals(this.hashCode(), that.hashCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cardId, name, convertedManaCost);
     }
 }
