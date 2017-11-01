@@ -1,5 +1,7 @@
 package org.rd.draftleague.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,6 +23,25 @@ public class CardList implements Serializable {
     private Date listCreationDate;
 
     @ManyToMany
+    @JsonIgnoreProperties({
+            "manaCostString",
+            "fullCardTypeString",
+            "artifactType",
+            "creatureType",
+            "enchantmentType",
+            "instantType",
+            "landType",
+            "legendaryType",
+            "planeswalkerType",
+            "sorceryType",
+            "tribalType",
+            "whiteColor",
+            "blueColor",
+            "blackColor",
+            "redColor",
+            "greenColor",
+            "colorlessColor"
+    })
     private List<Card> cards;
 
     public Long getId() {
@@ -56,10 +77,6 @@ public class CardList implements Serializable {
     }
 
     public CardList() {
-    }
-
-    public CardList(String name, Date listCreationDate) {
-        this(name, listCreationDate, new ArrayList<>());
     }
 
     public CardList(String name, Date listCreationDate, List<Card> cards) {

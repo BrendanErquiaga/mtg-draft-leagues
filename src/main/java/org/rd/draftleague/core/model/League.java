@@ -22,26 +22,22 @@ public class League implements Serializable {
     @Column(name = "startDate", nullable = false)
     private Date startDate;
 
-    @ManyToMany(mappedBy = "leagues", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties({"leagues", "drafts"})
+    @ManyToMany(mappedBy = "leagues", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"email", "startDate", "leagues", "drafts"})
     private List<Player> players;
 
     @OneToMany(mappedBy = "league")
-    @JsonIgnoreProperties({"league", "draftPlayers", "banList"})
+    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount"})
     private List<Draft> drafts;
 
     public League() {
     }
 
-    public League(String name, Date startDate) {
-        this(name, startDate, new ArrayList<>());
-    }
-
-    public League(String name, Date startDate, List<Player> players) {
+    public League(String name, Date startDate, List<Player> players, List<Draft> drafts) {
         this.name = name;
         this.startDate = startDate;
         this.players = players;
-        this.drafts = new ArrayList<>();
+        this.drafts = drafts;
     }
 
     public Long getId() {
@@ -82,31 +78,5 @@ public class League implements Serializable {
 
     public void setDrafts(List<Draft> drafts) {
         this.drafts = drafts;
-    }
-
-    @Override
-    public String toString() {
-        return "League{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", startDate=" + startDate +
-                ", players=" + players.size() +
-                ", drafts=" + drafts.size() +
-                '}';
-    }
-
-    public void addPlayer(Player player) {
-        this.getPlayers().add(player);
-    }
-
-    public void addDraft(Draft draft) {
-        this.getDrafts().add(draft);
-    }
-
-    public void copyLeagueValues(League league) {
-        this.name = league.getName();
-        this.startDate = league.getStartDate();
-        this.players = league.getPlayers();
-        this.drafts = league.getDrafts();
     }
 }

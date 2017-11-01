@@ -16,25 +16,27 @@ public class Draft implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    public Long id;
+    private Long id;
 
     @Column(name = "draftName", nullable = false)
-    public String name;
+    private String name;
 
     @Column(name = "startDate", nullable = false)
     private Date startDate;
 
     @ManyToOne
+    @JsonIgnoreProperties({"players", "drafts"})
     private League league;
 
     @Enumerated(EnumType.STRING)
     private DraftFormat draftFormat;
 
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"email", "startDate", "leagues", "drafts"})
+    private List<Player> draftPlayers;
+
     @Column(nullable = false, columnDefinition = "boolean default true")
     private boolean turnOrderMovingTowardsDoublePick;
-
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    private List<Player> draftPlayers;
 
     @Column(nullable = false, columnDefinition = "int default 0")
     private int draftedCardsCount;
@@ -46,32 +48,22 @@ public class Draft implements Serializable {
     private int pickCount;
 
     @ManyToOne
+    @JsonIgnoreProperties({"cards", "listCreationDate"})
     private CardList banList;
 
-    public Draft() { }
-
-    public Draft(String name, League league) {
-        this(name, new Date(), league);
+    public Draft() {
     }
 
-    public Draft(String name, Date startDate, League league) {
-        this(name, startDate, league, DraftFormat.ROTISSERIE_ROTATING_SNAKE);
-    }
-
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat) {
-        this(name, startDate, league, draftFormat, new ArrayList<>());
-    }
-
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers) {
-        this(name, startDate, league, draftFormat, draftPlayers, null);
-    }
-
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, List<Player> draftPlayers, CardList banList) {
+    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, boolean turnOrderMovingTowardsDoublePick, List<Player> draftPlayers, int draftedCardsCount, int roundNumber, int pickCount, CardList banList) {
         this.name = name;
         this.startDate = startDate;
         this.league = league;
         this.draftFormat = draftFormat;
+        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
         this.draftPlayers = draftPlayers;
+        this.draftedCardsCount = draftedCardsCount;
+        this.roundNumber = roundNumber;
+        this.pickCount = pickCount;
         this.banList = banList;
     }
 
@@ -99,9 +91,13 @@ public class Draft implements Serializable {
         this.startDate = startDate;
     }
 
-    public League getLeague() { return league; }
+    public League getLeague() {
+        return league;
+    }
 
-    public void setLeague(League league) { this.league = league; }
+    public void setLeague(League league) {
+        this.league = league;
+    }
 
     public DraftFormat getDraftFormat() {
         return draftFormat;
@@ -109,6 +105,22 @@ public class Draft implements Serializable {
 
     public void setDraftFormat(DraftFormat draftFormat) {
         this.draftFormat = draftFormat;
+    }
+
+    public boolean isTurnOrderMovingTowardsDoublePick() {
+        return turnOrderMovingTowardsDoublePick;
+    }
+
+    public void setTurnOrderMovingTowardsDoublePick(boolean turnOrderMovingTowardsDoublePick) {
+        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
+    }
+
+    public List<Player> getDraftPlayers() {
+        return draftPlayers;
+    }
+
+    public void setDraftPlayers(List<Player> draftPlayers) {
+        this.draftPlayers = draftPlayers;
     }
 
     public int getDraftedCardsCount() {
@@ -135,48 +147,11 @@ public class Draft implements Serializable {
         this.pickCount = pickCount;
     }
 
-    public boolean isTurnOrderMovingTowardsDoublePick() {
-        return turnOrderMovingTowardsDoublePick;
-    }
-
-    public void setTurnOrderMovingTowardsDoublePick(boolean turnOrderMovingTowardsDoublePick) {
-        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
-    }
-
-    public List<Player> getDraftPlayers() { return draftPlayers; }
-
-    public void setDraftPlayers(List<Player> draftPlayers) { this.draftPlayers = draftPlayers; }
-
     public CardList getBanList() {
         return banList;
     }
 
-    public String getBanListName() {
-        return (getBanList() != null) ? getBanList().getName() : "";
-    }
-
     public void setBanList(CardList banList) {
         this.banList = banList;
-    }
-
-    @Override
-    public String toString() {
-        return "Draft{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", startDate=" + startDate +
-                ", league=" + league +
-                ", draftFormat=" + draftFormat +
-                ", draftedCardsCount=" + draftedCardsCount +
-                ", roundNumber=" + roundNumber +
-                ", pickCount=" + pickCount +
-                ", turnOrderMovingTowardsDoublePick=" + turnOrderMovingTowardsDoublePick +
-                ", draftPlayers=" + draftPlayers +
-                ", banList=" + getBanListName() +
-                '}';
-    }
-
-    public void addPlayer(Player player) {
-        this.getDraftPlayers().add(player);
     }
 }

@@ -1,8 +1,9 @@
 package org.rd.draftleague.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,23 +36,14 @@ public class Player implements Serializable {
     private Date startDate;
 
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties({"players", "drafts"})
     private List<League> leagues;
 
     @ManyToMany(mappedBy = "draftPlayers")
+    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount"})
     private List<Draft> drafts;
 
-    public Player() { }
-
-    public Player(String name, String email, Date startDate) {
-        this(name, "", email, startDate);
-    }
-
-    public Player(String name, String nickName, String email, Date startDate) {
-        this(name, nickName, email, startDate, new ArrayList<>());
-    }
-
-    public Player(String name, String nickName, String email, Date startDate, List<League> leagues) {
-        this(name, nickName, email, startDate, leagues, new ArrayList<>());
+    public Player() {
     }
 
     public Player(String name, String nickName, String email, Date startDate, List<League> leagues, List<Draft> drafts) {
@@ -103,7 +95,7 @@ public class Player implements Serializable {
         this.startDate = startDate;
     }
 
-        public List<League> getLeagues() {
+    public List<League> getLeagues() {
         return leagues;
     }
 
@@ -117,39 +109,5 @@ public class Player implements Serializable {
 
     public void setDrafts(List<Draft> drafts) {
         this.drafts = drafts;
-    }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", nickName='" + nickName + '\'' +
-                ", email='" + email + '\'' +
-                ", startDate=" + startDate +
-                ", leagues=" + leagues.size() +
-                ", drafts=" + drafts.size() +
-                '}';
-    }
-
-    public void joinLeague(League leagueToJoin) {
-        this.getLeagues().add(leagueToJoin);
-        leagueToJoin.addPlayer(this);
-    }
-
-    public void joinDraft(Draft draftToJoin) {
-        this.getDrafts().add(draftToJoin);
-        draftToJoin.addPlayer(this);
-
-        //TODO Only let this happen if they are in the same league as the draft
-        //TODO Or auto-join the league if that feature is enabled
-    }
-
-    public void copyPlayerValues(Player playerToCopyFrom) {
-        this.name = playerToCopyFrom.getName();
-        this.nickName = playerToCopyFrom.getNickName();
-        this.email = playerToCopyFrom.getEmail();
-        this.startDate = playerToCopyFrom.getStartDate();
-        this.leagues = playerToCopyFrom.getLeagues();
     }
 }

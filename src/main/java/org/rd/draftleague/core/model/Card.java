@@ -54,24 +54,7 @@ public class Card implements Serializable {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean colorlessColor;
 
-    public Card() { }
-
-    public Card(String name) {
-        this(name, 1);
-    }
-
-    public Card(String name, int convertedManaCost) {
-        this(name, convertedManaCost, "");
-    }
-
-    public Card(String name, int convertedManaCost, String fullCardTypeString) {
-        this(name, convertedManaCost, "", fullCardTypeString);
-    }
-
-    public Card(String name, int convertedManaCost, String manaCostString, String fullCardTypeString) {
-        this(name, convertedManaCost, manaCostString, fullCardTypeString,
-                false,false,false,false,false,false,false,false,false,
-                false,false,false,false,false,false);
+    public Card() {
     }
 
     public Card(String name, int convertedManaCost, String manaCostString, String fullCardTypeString, boolean artifactType, boolean creatureType, boolean enchantmentType, boolean instantType, boolean landType, boolean legendaryType, boolean planeswalkerType, boolean sorceryType, boolean tribalType, boolean whiteColor, boolean blueColor, boolean blackColor, boolean redColor, boolean greenColor, boolean colorlessColor) {
