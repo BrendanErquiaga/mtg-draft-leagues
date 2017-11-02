@@ -3,6 +3,7 @@ package org.rd.draftleague.core.dao;
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 import org.rd.draftleague.core.model.League;
+import org.rd.draftleague.core.model.Player;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,5 +32,11 @@ public class LeagueDAO extends AbstractDAO<League> {
 
     public void delete(League league) {
         currentSession().delete(league);
+    }
+
+    public Optional<League> addPlayer(Long leagueId, Player player) {
+        Optional<League> exisitingLeague = findById(leagueId);
+        exisitingLeague.ifPresent(league -> league.addPlayer(player));
+        return exisitingLeague;
     }
 }

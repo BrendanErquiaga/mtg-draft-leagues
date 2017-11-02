@@ -142,4 +142,12 @@ public class Player implements Serializable {
 
         return this;
     }
+
+    public void joinLeague(League league) {
+        if(!this.getLeagues().contains(league)) {
+            this.getLeagues().add(league);
+        } else {
+            //TODO Logs...
+        }
+    }
 }

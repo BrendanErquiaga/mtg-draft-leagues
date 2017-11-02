@@ -109,4 +109,12 @@ public class League implements Serializable {
 
         return this;
     }
+
+    public void addPlayer(Player player) {
+        if(!this.getPlayers().contains(player)) {
+            this.getPlayers().add(player);
+        } else {
+            //TODO Add log warning about this?
+        }
+    }
 }

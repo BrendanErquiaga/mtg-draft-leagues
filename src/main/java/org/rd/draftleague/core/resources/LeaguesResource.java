@@ -1,9 +1,12 @@
 package org.rd.draftleague.core.resources;
 
+import com.sun.media.jfxmedia.events.PlayerStateEvent;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.LeagueDAO;
+import org.rd.draftleague.core.dao.PlayerDAO;
 import org.rd.draftleague.core.model.League;
+import org.rd.draftleague.core.model.Player;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -60,5 +63,13 @@ public class LeaguesResource {
         }
     }
 
-    //TODO Add paths to update individual items
+    @POST
+    @Path("/{id}/addplayer")
+    @UnitOfWork
+    public League addPlayer(@PathParam("id") LongParam id, Player player) {
+        return leagueDAO.addPlayer(id.get(), player)
+                .orElseThrow(() ->
+                        new WebApplicationException("League not found", 404));
+    }
+    //Doesn't save... why not
 }
