@@ -37,6 +37,11 @@ public class LeagueDAO extends AbstractDAO<League> {
     public Optional<League> addPlayer(Long leagueId, Player player) {
         Optional<League> exisitingLeague = findById(leagueId);
         exisitingLeague.ifPresent(league -> league.addPlayer(player));
-        return exisitingLeague;
+
+        if(exisitingLeague.isPresent()){
+            return update(leagueId, exisitingLeague.get());
+        } else {
+            return exisitingLeague;
+        }
     }
 }
