@@ -103,9 +103,9 @@ public class League implements Serializable {
     }
 
     public League update(League league) {
-        this.name = league.getName();
-        this.players = league.getPlayers();
-        this.drafts = league.getDrafts();
+        this.setName(league.getName());
+        this.setPlayers(league.getPlayers());
+        this.setDrafts(league.getDrafts());
 
         return this;
     }

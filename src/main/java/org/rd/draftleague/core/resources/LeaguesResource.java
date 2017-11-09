@@ -67,9 +67,34 @@ public class LeaguesResource {
     @Path("/{id}/addplayer")
     @UnitOfWork
     public League addPlayer(@PathParam("id") LongParam id, Player player) {
-        return leagueDAO.addPlayer(id.get(), player)
-                .orElseThrow(() ->
-                        new WebApplicationException("League not found", 404));
+        Optional<League>  existingLeagueOptional = leagueDAO.findById(id.get());
+
+        if(existingLeagueOptional.isPresent()) {
+            League existingLeague = existingLeagueOptional.get();
+            existingLeague.addPlayer(player);
+            return update(id, existingLeague);
+        } else {
+            throw new WebApplicationException("League not found", 404);
+        }
     }
-    //Doesn't save... why not
+
+    //Add Player Doesn't Work (I assume it's because I need to update the player object too?)
+    //Update Name Does???
+
+    @POST
+    @Path("/{id}/update-name")
+    @UnitOfWork
+    public League addPlayer(@PathParam("id") LongParam id, String newName) {
+        Optional<League>  existingLeagueOptional = leagueDAO.findById(id.get());
+
+        if(existingLeagueOptional.isPresent()) {
+            League existingLeague = existingLeagueOptional.get();
+            existingLeague.setName(newName);
+            return update(id, existingLeague);
+        } else {
+            throw new WebApplicationException("League not found", 404);
+        }
+    }
+
+
 }
