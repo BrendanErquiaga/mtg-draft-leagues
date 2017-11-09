@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -120,5 +119,13 @@ public class CardList implements Serializable {
         this.cards = cardList.getCards();
 
         return this;
+    }
+
+    public void addCard(Card card) {
+        if(!this.getCards().contains(card)) {
+            this.getCards().add(card);
+        } else {
+            //TODO Add log warning about this?
+        }
     }
 }

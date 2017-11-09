@@ -3,6 +3,7 @@ package org.rd.draftleague.core.resources;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.CardListDAO;
+import org.rd.draftleague.core.model.Card;
 import org.rd.draftleague.core.model.CardList;
 
 import javax.ws.rs.*;
@@ -45,6 +46,21 @@ public class CardListsResource {
         return cardListDAO.update(id.get(), cardList)
                 .orElseThrow(() ->
                         new WebApplicationException("League not found", 404));
+    }
+
+    @POST
+    @Path("/{id}/add-card")
+    @UnitOfWork
+    public CardList addCard(@PathParam("id") LongParam id, Card card) {
+        Optional<CardList>  cardListOptional = cardListDAO.findById(id.get());
+
+        if(cardListOptional.isPresent()) {
+            CardList cardList = cardListOptional.get();
+            cardList.addCard(card);
+            return update(id, cardList);
+        } else {
+            throw new WebApplicationException("CardList not found", 404);
+        }
     }
 
     @DELETE

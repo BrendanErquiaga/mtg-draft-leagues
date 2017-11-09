@@ -52,11 +52,15 @@ public class Draft implements Serializable {
     @JsonIgnoreProperties({"cards", "listCreationDate"})
     private CardList banList;
 
+    @ManyToOne
+    @JsonIgnoreProperties({"cards", "listCreationDate"})
+    private CardList pickedCards;
+
     public Draft() {
         this.startDate = new Date();
     }
 
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, boolean turnOrderMovingTowardsDoublePick, List<Player> draftPlayers, int draftedCardsCount, int roundNumber, int pickCount, CardList banList) {
+    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, boolean turnOrderMovingTowardsDoublePick, List<Player> draftPlayers, int draftedCardsCount, int roundNumber, int pickCount, CardList banList, CardList pickedCards) {
         this.name = name;
         this.startDate = startDate;
         this.league = league;
@@ -67,6 +71,7 @@ public class Draft implements Serializable {
         this.roundNumber = roundNumber;
         this.pickCount = pickCount;
         this.banList = banList;
+        this.pickedCards = pickedCards;
     }
 
     public Long getId() {
@@ -157,6 +162,14 @@ public class Draft implements Serializable {
         this.banList = banList;
     }
 
+    public CardList getPickedCards() {
+        return pickedCards;
+    }
+
+    public void setPickedCards(CardList pickedCards) {
+        this.pickedCards = pickedCards;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(this == o) {
@@ -187,6 +200,7 @@ public class Draft implements Serializable {
         this.roundNumber = draft.getRoundNumber();
         this.pickCount = draft.getPickCount();
         this.banList = draft.getBanList();
+        this.pickedCards = draft.getPickedCards();
 
         return this;
     }
