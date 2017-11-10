@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "drafted-cards")
+@Table(name = "drafted_cards")
 public class DraftedCard implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +39,9 @@ public class DraftedCard implements Serializable{
     @Column(name = "draftTime")
     private Date draftTime;
 
+    @Column(name = "drafterID")
+    private Long drafterID;
+
     public Long getDraftedCardId() {
         return draftedCardId;
     }
@@ -63,14 +66,23 @@ public class DraftedCard implements Serializable{
         this.draftTime = draftTime;
     }
 
+    public Long getDrafterID() {
+        return drafterID;
+    }
+
+    public void setDrafterID(Long drafterID) {
+        this.drafterID = drafterID;
+    }
+
     public DraftedCard() {
     }
 
-    public DraftedCard(Long draftedCardId, Card cardReference, Date draftTime)
+    public DraftedCard(Long draftedCardId, Card cardReference, Date draftTime, Long drafterID)
     {
         this.draftedCardId = draftedCardId;
         this.cardReference = cardReference;
         this.draftTime = draftTime;
+        this.drafterID = drafterID;
     }
 
     public DraftedCard update(DraftedCard draftedCard)
@@ -78,6 +90,7 @@ public class DraftedCard implements Serializable{
         this.draftedCardId = draftedCard.getDraftedCardId();
         this.cardReference = draftedCard.getCardReference();
         this.draftTime = draftedCard.getDraftTime();
+        this.drafterID = draftedCard.getDrafterID();
 
         return this;
     }

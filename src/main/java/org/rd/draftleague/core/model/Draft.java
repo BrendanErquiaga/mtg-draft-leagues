@@ -2,6 +2,7 @@ package org.rd.draftleague.core.model;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.rd.draftleague.core.utils.DraftLeagueConstants;
 import org.rd.draftleague.core.utils.DraftLeagueConstants.DraftFormat;
 
 import javax.persistence.*;
@@ -48,30 +49,36 @@ public class Draft implements Serializable {
     @Column(nullable = false, columnDefinition = "int default 0")
     private int pickCount;
 
+    @Column(nullable = false, columnDefinition = "int default 50")
+    private int roundLimit;
+
     @ManyToOne
     @JsonIgnoreProperties({"cards", "listCreationDate"})
     private CardList banList;
 
-    @ManyToOne
-    @JsonIgnoreProperties({"cards", "listCreationDate"})
-    private CardList pickedCards;
+    @OneToMany
+    private List<DraftedCard> draftedCards;
+
+    @Enumerated(EnumType.STRING)
+    private DraftLeagueConstants.DraftStatus draftStatus;
 
     public Draft() {
         this.startDate = new Date();
     }
 
-    public Draft(String name, Date startDate, League league, DraftFormat draftFormat, boolean turnOrderMovingTowardsDoublePick, List<Player> draftPlayers, int draftedCardsCount, int roundNumber, int pickCount, CardList banList, CardList pickedCards) {
+    public Draft(String name, League league, DraftFormat draftFormat, List<Player> draftPlayers, boolean turnOrderMovingTowardsDoublePick, int draftedCardsCount, int roundNumber, int pickCount, int roundLimit, CardList banList, List<DraftedCard> draftedCards) {
         this.name = name;
-        this.startDate = startDate;
         this.league = league;
         this.draftFormat = draftFormat;
-        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
         this.draftPlayers = draftPlayers;
+        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
         this.draftedCardsCount = draftedCardsCount;
         this.roundNumber = roundNumber;
         this.pickCount = pickCount;
+        this.roundLimit = roundLimit;
         this.banList = banList;
-        this.pickedCards = pickedCards;
+        this.draftedCards = draftedCards;
+        this.draftStatus = DraftLeagueConstants.DraftStatus.CREATED;
     }
 
     public Long getId() {
@@ -162,12 +169,28 @@ public class Draft implements Serializable {
         this.banList = banList;
     }
 
-    public CardList getPickedCards() {
-        return pickedCards;
+    public List<DraftedCard> getDraftedCards() {
+        return draftedCards;
     }
 
-    public void setPickedCards(CardList pickedCards) {
-        this.pickedCards = pickedCards;
+    public void setDraftedCards(List<DraftedCard> draftedCards) {
+        this.draftedCards = draftedCards;
+    }
+
+    public int getRoundLimit() {
+        return roundLimit;
+    }
+
+    public void setRoundLimit(int roundLimit) {
+        this.roundLimit = roundLimit;
+    }
+
+    public DraftLeagueConstants.DraftStatus getDraftStatus() {
+        return draftStatus;
+    }
+
+    public void setDraftStatus(DraftLeagueConstants.DraftStatus draftStatus) {
+        this.draftStatus = draftStatus;
     }
 
     @Override
@@ -200,7 +223,9 @@ public class Draft implements Serializable {
         this.roundNumber = draft.getRoundNumber();
         this.pickCount = draft.getPickCount();
         this.banList = draft.getBanList();
-        this.pickedCards = draft.getPickedCards();
+        this.draftedCards = draft.getDraftedCards();
+        this.roundLimit = draft.getRoundLimit();
+        this.draftStatus = draft.getDraftStatus();
 
         return this;
     }

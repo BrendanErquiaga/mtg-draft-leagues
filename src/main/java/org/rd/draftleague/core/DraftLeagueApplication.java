@@ -17,7 +17,7 @@ public class DraftLeagueApplication extends Application<DraftLeagueApiConfigurat
 
     private final HibernateBundle<DraftLeagueApiConfiguration> hibernateBundle
             = new HibernateBundle<DraftLeagueApiConfiguration>(
-            Player.class, League.class, Draft.class, CardList.class, Card.class
+            Player.class, League.class, Draft.class, CardList.class, Card.class, DraftedCard.class
     ) {
         @Override
         public PooledDataSourceFactory getDataSourceFactory(DraftLeagueApiConfiguration draftLeagueApiConfiguration) {
@@ -37,11 +37,13 @@ public class DraftLeagueApplication extends Application<DraftLeagueApiConfigurat
         final DraftDAO draftDAO = new DraftDAO(hibernateBundle.getSessionFactory());
         final CardListDAO cardListDAO = new CardListDAO(hibernateBundle.getSessionFactory());
         final CardDAO cardDAO = new CardDAO(hibernateBundle.getSessionFactory());
+        final DraftedCardDAO draftedCardDAO = new DraftedCardDAO(hibernateBundle.getSessionFactory());
 
         environment.jersey().register(new PlayersResource(playerDAO));
         environment.jersey().register(new LeaguesResource(leagueDAO));
         environment.jersey().register(new DraftsResource(draftDAO));
         environment.jersey().register(new CardListsResource(cardListDAO));
         environment.jersey().register(new CardsResource(cardDAO));
+        environment.jersey().register(new DraftedCardsResource(draftedCardDAO));
     }
 }

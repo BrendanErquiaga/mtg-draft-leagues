@@ -28,7 +28,7 @@ public class League implements Serializable {
     private List<Player> players;
 
     @OneToMany(mappedBy = "league")
-    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount"})
+    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount", "draftedCards"})
     private List<Draft> drafts;
 
     public League() {

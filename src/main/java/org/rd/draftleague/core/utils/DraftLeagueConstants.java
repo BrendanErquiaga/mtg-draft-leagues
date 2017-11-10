@@ -9,6 +9,13 @@ public class DraftLeagueConstants {
         STANDARD
     }
 
+    public enum DraftStatus {
+        CREATED,
+        DRAFTING,
+        PAUSED,
+        FINISHED
+    }
+
     public enum CardType {
         ARTIFACT,
         CREATURE,
