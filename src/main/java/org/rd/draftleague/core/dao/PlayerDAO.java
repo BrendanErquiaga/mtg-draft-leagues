@@ -2,6 +2,7 @@ package org.rd.draftleague.core.dao;
 
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
+import org.rd.draftleague.core.model.Draft;
 import org.rd.draftleague.core.model.League;
 import org.rd.draftleague.core.model.Player;
 
@@ -59,5 +60,11 @@ public class PlayerDAO extends AbstractDAO<Player> {
         } else {
             return existingPlayer;
         }
+    }
+
+    public Optional<Player> joinDraft(Player player, Draft draftToJoin) {
+        player.joinDraft(draftToJoin);
+
+        return update(player.getId(), player);
     }
 }

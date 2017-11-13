@@ -2,6 +2,8 @@ package org.rd.draftleague.core.dao;
 
 import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
+import org.rd.draftleague.core.model.Card;
+import org.rd.draftleague.core.model.CardList;
 import org.rd.draftleague.core.model.Draft;
 import org.rd.draftleague.core.model.League;
 
@@ -45,5 +47,23 @@ public class DraftDAO extends AbstractDAO<Draft> {
         } else {
             return existingDraft;
         }
+    }
+
+    public Optional<Draft> addBanlist(Long draftId, CardList banlist) {
+        Optional<Draft> existingDraft = findById(draftId);
+        existingDraft.ifPresent(draft -> draft.addBanlist(banlist));
+
+        if(existingDraft.isPresent()) {
+            return update(draftId, existingDraft.get());
+        } else {
+            return existingDraft;
+        }
+    }
+
+    public Optional<Draft> draftCard(Draft draft, Card cardToDraft, Long drafterId) {
+        draft.draftCardForPlayer(cardToDraft, drafterId);
+        //TODO Make sure that happened?
+
+        return update(draft.getId(), draft);
     }
 }

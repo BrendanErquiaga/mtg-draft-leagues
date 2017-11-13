@@ -3,8 +3,11 @@ package org.rd.draftleague.core.resources;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.DraftDAO;
+import org.rd.draftleague.core.model.Card;
+import org.rd.draftleague.core.model.CardList;
 import org.rd.draftleague.core.model.Draft;
 import org.rd.draftleague.core.model.League;
+import org.rd.draftleague.core.utils.RequestClasses;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -71,6 +74,34 @@ public class DraftsResource {
             Draft existingDraft = existingDraftOptional.get();
             existingDraft.joinLeauge(league);
             return update(draftId, existingDraft);
+        } else {
+            throw new WebApplicationException("Draft not found", 404);
+        }
+    }
+
+    @POST
+    @Path("/{id}/add-banlist")
+    @UnitOfWork
+    public Draft addBanlist(@PathParam("id") LongParam draftId, CardList banlist) {
+        Optional<Draft> existingDraftOptional = draftDAO.findById(draftId.get());
+
+        if(existingDraftOptional.isPresent()) {
+            Draft existingDraft = existingDraftOptional.get();
+            existingDraft.addBanlist(banlist);
+            return update(draftId, existingDraft);
+        } else {
+            throw new WebApplicationException("Draft not found", 404);
+        }
+    }
+
+    @POST
+    @Path("/{id}/draft-card")
+    @UnitOfWork
+    public Optional<Draft> draftCard(@PathParam("id") LongParam draftId, RequestClasses.DraftedCardRequestObject draftedCardRequestObject) {
+        Optional<Draft> existingDraftOptional = draftDAO.findById(draftId.get());
+
+        if(existingDraftOptional.isPresent()) {
+            return draftDAO.draftCard(existingDraftOptional.get(), draftedCardRequestObject.getDraftedCard(), draftedCardRequestObject.getDrafterId());
         } else {
             throw new WebApplicationException("Draft not found", 404);
         }

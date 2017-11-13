@@ -33,7 +33,7 @@ public class Draft implements Serializable {
     @Enumerated(EnumType.STRING)
     private DraftFormat draftFormat;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "drafts")
     @JsonIgnoreProperties({"email", "startDate", "leagues", "drafts"})
     private List<Player> draftPlayers;
 
@@ -56,7 +56,7 @@ public class Draft implements Serializable {
     @JsonIgnoreProperties({"cards", "listCreationDate"})
     private CardList banList;
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.ALL)
     private List<DraftedCard> draftedCards;
 
     @Enumerated(EnumType.STRING)
@@ -236,5 +236,55 @@ public class Draft implements Serializable {
         } else {
             //TODO Logs...
         }
+    }
+
+    public void addBanlist(CardList banList) {
+        if(this.getBanList() != banList) {
+            this.setBanList(banList);
+        } else {
+            //TODO Logs...
+        }
+    }
+
+    public void draftCardForPlayer(Card card, Long playerId) {
+        if(this.getDraftStatus() == DraftLeagueConstants.DraftStatus.DRAFTING) {
+            if(playerIsInDraft(playerId)) {
+                //TODO Make sure card isn't on the banlist
+                //TODO Make sure card hasn't been drafted already
+
+                DraftedCard draftedCard = new DraftedCard(card, new Date(), playerId);
+
+                this.getDraftedCards().add(draftedCard);
+                this.advanceDraft(playerId);
+            } else {
+                //Don't draft cards if the player isn't in your draft
+            }
+
+        } else {
+            //Don't draft cards if it's not drafting time...
+        }
+    }
+
+    private boolean playerIsInDraft(Long playerId) {
+        for(Player player : this.getDraftPlayers()) {
+            if(player.getId() == playerId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void incrementDraftCounters() {
+        this.setDraftedCardsCount(this.getDraftedCardsCount() + 1);
+        this.setPickCount(this.getPickCount() + 1);
+    }
+
+    private void advanceDraft(Long lastDrafterId) {
+        this.incrementDraftCounters();
+
+        //Check if count has advanced enough to change draft direction
+        //Advance round count if needed
+        //Pick next drafter
     }
 }

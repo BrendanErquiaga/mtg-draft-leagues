@@ -40,8 +40,8 @@ public class Player implements Serializable {
     @JsonIgnoreProperties({"players", "drafts"})
     private List<League> leagues;
 
-    @ManyToMany(mappedBy = "draftPlayers")
-    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount"})
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount", "draftedCards"})
     private List<Draft> drafts;
 
     public Player() {
@@ -146,6 +146,19 @@ public class Player implements Serializable {
     public void joinLeague(League league) {
         if(!this.getLeagues().contains(league)) {
             this.getLeagues().add(league);
+        } else {
+            //TODO Logs...
+        }
+    }
+
+    public void joinDraft(Draft draft) {
+        if(!this.getDrafts().contains(draft)) {
+            if(this.getLeagues().contains(draft.getLeague())){
+                //TODO Don't join draft if draft is already started
+                this.getDrafts().add(draft);
+            } else {
+                //TODO Log if Draft & Player aren't in the same league...
+            }
         } else {
             //TODO Logs...
         }

@@ -77,9 +77,8 @@ public class DraftedCard implements Serializable{
     public DraftedCard() {
     }
 
-    public DraftedCard(Long draftedCardId, Card cardReference, Date draftTime, Long drafterID)
+    public DraftedCard(Card cardReference, Date draftTime, Long drafterID)
     {
-        this.draftedCardId = draftedCardId;
         this.cardReference = cardReference;
         this.draftTime = draftTime;
         this.drafterID = drafterID;
@@ -87,7 +86,6 @@ public class DraftedCard implements Serializable{
 
     public DraftedCard update(DraftedCard draftedCard)
     {
-        this.draftedCardId = draftedCard.getDraftedCardId();
         this.cardReference = draftedCard.getCardReference();
         this.draftTime = draftedCard.getDraftTime();
         this.drafterID = draftedCard.getDrafterID();
