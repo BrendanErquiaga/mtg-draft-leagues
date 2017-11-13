@@ -4,6 +4,7 @@ import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.DraftDAO;
 import org.rd.draftleague.core.model.Draft;
+import org.rd.draftleague.core.model.League;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -57,6 +58,21 @@ public class DraftsResource {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/join-league")
+    @UnitOfWork
+    public Draft joinLeague(@PathParam("id") LongParam draftId, League league) {
+        Optional<Draft> existingDraftOptional = draftDAO.findById(draftId.get());
+
+        if(existingDraftOptional.isPresent()) {
+            Draft existingDraft = existingDraftOptional.get();
+            existingDraft.joinLeauge(league);
+            return update(draftId, existingDraft);
+        } else {
+            throw new WebApplicationException("Draft not found", 404);
         }
     }
 }

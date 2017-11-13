@@ -229,4 +229,12 @@ public class Draft implements Serializable {
 
         return this;
     }
+
+    public void joinLeauge(League league) {
+        if(this.getLeague() != league) {
+            this.setLeague(league);
+        } else {
+            //TODO Logs...
+        }
+    }
 }

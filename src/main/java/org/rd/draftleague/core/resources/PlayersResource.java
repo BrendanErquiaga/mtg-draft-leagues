@@ -3,6 +3,7 @@ package org.rd.draftleague.core.resources;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.params.LongParam;
 import org.rd.draftleague.core.dao.PlayerDAO;
+import org.rd.draftleague.core.model.League;
 import org.rd.draftleague.core.model.Player;
 
 import javax.ws.rs.*;
@@ -64,6 +65,21 @@ public class PlayersResource {
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/join-league")
+    @UnitOfWork
+    public Player joinLeague(@PathParam("id") LongParam playerId, League league) {
+        Optional<Player>  existingPlayerOptional = playerDAO.findById(playerId.get());
+
+        if(existingPlayerOptional.isPresent()) {
+            Player existingPlayer = existingPlayerOptional.get();
+            existingPlayer.joinLeague(league);
+            return update(playerId, existingPlayer);
+        } else {
+            throw new WebApplicationException("Player not found", 404);
         }
     }
 }
