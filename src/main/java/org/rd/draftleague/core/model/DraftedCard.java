@@ -14,7 +14,7 @@ public class DraftedCard implements Serializable{
     @Column(name = "draftedCardId")
     private Long draftedCardId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JsonIgnoreProperties({
             "manaCostString",
             "fullCardTypeString",
