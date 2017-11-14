@@ -46,8 +46,6 @@ public class DraftTest {
         int totalPicks = draft.getRoundLimit() * draft.getDraftPlayers().size() * 2;
 
         for(int i = 0; i < totalPicks; i++) {
-            System.out.println("Pick: " + draft.getPickCount() + ". Round: " + draft.getRoundNumber()
-                    + ". Current Drafter: " + draft.getDraftPlayers().get(draft.getCurrentDraftIndex()).getName());
             draft.advanceDraft();
         }
 

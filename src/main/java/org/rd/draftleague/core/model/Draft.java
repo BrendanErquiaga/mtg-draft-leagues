@@ -1,13 +1,11 @@
 package org.rd.draftleague.core.model;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.rd.draftleague.core.utils.DraftLeagueConstants;
 import org.rd.draftleague.core.utils.DraftLeagueConstants.DraftFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -74,6 +72,7 @@ public class Draft implements Serializable {
         this.banList = banList;
         this.draftedCards = draftedCards;
         this.draftStatus = CREATED;
+        this.startDate = new Date();
     }
 
     public Long getId() {
@@ -172,11 +171,12 @@ public class Draft implements Serializable {
         this.draftStatus = draftStatus;
     }
 
+    @Transient
     public Player getCurrentDrafter() {
         if(this.getDraftStatus() == CREATED || this.getDraftStatus() == FINISHED) {
             return this.getDraftPlayers().get(0);
         } else {
-            return this.getDraftPlayers().get(this.getCurrentDraftIndex());
+            return this.getDraftPlayers().get(this.currentDraftIndex());
         }
     }
 
@@ -234,20 +234,34 @@ public class Draft implements Serializable {
     public void draftCardForPlayer(Card card, Long playerId) {
         if(this.getDraftStatus() == DraftLeagueConstants.DraftStatus.DRAFTING) {
             if(playerIsInDraft(playerId)) {
-                //TODO Make sure card isn't on the banlist
-                //TODO Make sure card hasn't been drafted already
+                if(!this.banList.listContainsCard(card)) {
+                    if(cardIsFree(card)) {
+                        DraftedCard draftedCard = new DraftedCard(card, new Date(), playerId);
 
-                DraftedCard draftedCard = new DraftedCard(card, new Date(), playerId);
-
-                this.getDraftedCards().add(draftedCard);
-                this.advanceDraft();
+                        this.getDraftedCards().add(draftedCard);
+                        this.advanceDraft();
+                    } else {
+                        //Don't draft cards that have already been drafted...
+                    }
+                } else {
+                    //Don't draft cards that are banned...
+                }
             } else {
                 //Don't draft cards if the player isn't in your draft
             }
-
         } else {
             //Don't draft cards if it's not drafting time...
         }
+    }
+
+    private boolean cardIsFree(Card cardToCheck) {
+        for(DraftedCard draftedCard : this.getDraftedCards()) {
+            if(draftedCard.getCardReference().equals(cardToCheck)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private boolean playerIsInDraft(Long playerId) {
@@ -264,7 +278,7 @@ public class Draft implements Serializable {
         this.setPickCount(this.getPickCount() + 1);
     }
 
-    public void advanceDraft() {
+    protected void advanceDraft() {
         this.incrementDraftCounters();
 
         if(this.shouldIncrementRoundCounter()) {
@@ -286,10 +300,10 @@ public class Draft implements Serializable {
         this.setDraftPlayers(players);
     }
 
-    public int getCurrentDraftIndex() {
+    private int currentDraftIndex() {
         switch (this.getDraftFormat()) {
             case ROTISSERIE_ROTATING_SNAKE:
-                return getCurrentDraftIndex_RotisserieRotatingSnake();
+                return currentDraftIndex_RotisserieRotatingSnake();
             case STANDARD:
             case ROCHESTER:
             case ROTISSERIE:
@@ -299,7 +313,7 @@ public class Draft implements Serializable {
         }
     }
 
-    public int getCurrentDraftIndex_RotisserieRotatingSnake() {
+    private int currentDraftIndex_RotisserieRotatingSnake() {
         int playerCount = this.getDraftPlayers().size();
         int pickIndex = (this.getPickCount() < this.picksPerRound()) ? (this.getPickCount() - 1) : (this.getPickCount() - 1) % this.picksPerRound();
 
@@ -312,14 +326,6 @@ public class Draft implements Serializable {
 
     private int picksPerRound() {
         return this.getDraftPlayers().size() * 2;
-    }
-
-    private int getPickStartIndex() {
-        if(this.getRoundNumber() <= this.getDraftPlayers().size()) {
-            return this.getRoundNumber();
-        } else {
-            return this.getRoundNumber() % this.getDraftPlayers().size();
-        }
     }
 
     private boolean shouldIncrementRoundCounter() {

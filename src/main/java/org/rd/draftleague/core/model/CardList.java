@@ -128,4 +128,8 @@ public class CardList implements Serializable {
             //TODO Add log warning about this?
         }
     }
+
+    public boolean listContainsCard(Card cardToCheck) {
+        return this.getCards().contains(cardToCheck);
+    }
 }
