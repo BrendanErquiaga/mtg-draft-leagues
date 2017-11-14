@@ -17,7 +17,7 @@ public class DraftTest {
     @Before
     public void setup() {
         draft = new Draft("Test",null, ROTISSERIE_ROTATING_SNAKE, new ArrayList<>(),
-                true,1,1,50,
+                1,1,50,
                 null, new ArrayList<>());
 
         Player p1 = new Player("P1", "1", new Date(), "", null, new ArrayList<>());
@@ -34,20 +34,24 @@ public class DraftTest {
         draft.getDraftPlayers().add(p2);
         draft.getDraftPlayers().add(p3);
         draft.getDraftPlayers().add(p4);
-//        draft.getDraftPlayers().add(p5);
-//        draft.getDraftPlayers().add(p6);
-//        draft.getDraftPlayers().add(p7);
-//        draft.getDraftPlayers().add(p8);
-//        draft.getDraftPlayers().add(p9);
-//        draft.getDraftPlayers().add(p10);
+        draft.getDraftPlayers().add(p5);
+        draft.getDraftPlayers().add(p6);
+        draft.getDraftPlayers().add(p7);
+        draft.getDraftPlayers().add(p8);
+        draft.getDraftPlayers().add(p9);
+        draft.getDraftPlayers().add(p10);
     }
     @Test
     public void getCurrentDraftIndex_RotisserieRotatingSnakeTest() {
-        for(int i = 0; i < 64; i++) {
+        int totalPicks = draft.getRoundLimit() * draft.getDraftPlayers().size() * 2;
+
+        for(int i = 0; i < totalPicks; i++) {
             System.out.println("Pick: " + draft.getPickCount() + ". Round: " + draft.getRoundNumber()
                     + ". Current Drafter: " + draft.getDraftPlayers().get(draft.getCurrentDraftIndex()).getName());
             draft.advanceDraft();
         }
+
+        assertTrue(draft.getDraftStatus() == DraftLeagueConstants.DraftStatus.FINISHED);
     }
 
 }
