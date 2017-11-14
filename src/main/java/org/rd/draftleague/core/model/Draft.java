@@ -12,6 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static org.rd.draftleague.core.utils.DraftLeagueConstants.DraftStatus.CREATED;
+import static org.rd.draftleague.core.utils.DraftLeagueConstants.DraftStatus.FINISHED;
+
 @Entity
 @Table(name = "drafts")
 public class Draft implements Serializable {
@@ -37,16 +40,10 @@ public class Draft implements Serializable {
     @JsonIgnoreProperties({"email", "startDate", "leagues", "drafts"})
     private List<Player> draftPlayers;
 
-    @Column(nullable = false, columnDefinition = "boolean default true")
-    private boolean turnOrderMovingTowardsDoublePick;
-
-    @Column(nullable = false, columnDefinition = "int default 0")
-    private int draftedCardsCount;
-
-    @Column(nullable = false, columnDefinition = "int default 0")
+    @Column(nullable = false, columnDefinition = "int default 1")
     private int roundNumber;
 
-    @Column(nullable = false, columnDefinition = "int default 0")
+    @Column(nullable = false, columnDefinition = "int default 1")
     private int pickCount;
 
     @Column(nullable = false, columnDefinition = "int default 50")
@@ -66,19 +63,17 @@ public class Draft implements Serializable {
         this.startDate = new Date();
     }
 
-    public Draft(String name, League league, DraftFormat draftFormat, List<Player> draftPlayers, boolean turnOrderMovingTowardsDoublePick, int draftedCardsCount, int roundNumber, int pickCount, int roundLimit, CardList banList, List<DraftedCard> draftedCards) {
+    public Draft(String name, League league, DraftFormat draftFormat, List<Player> draftPlayers, int roundNumber, int pickCount, int roundLimit, CardList banList, List<DraftedCard> draftedCards) {
         this.name = name;
         this.league = league;
         this.draftFormat = draftFormat;
         this.draftPlayers = draftPlayers;
-        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
-        this.draftedCardsCount = draftedCardsCount;
         this.roundNumber = roundNumber;
         this.pickCount = pickCount;
         this.roundLimit = roundLimit;
         this.banList = banList;
         this.draftedCards = draftedCards;
-        this.draftStatus = DraftLeagueConstants.DraftStatus.CREATED;
+        this.draftStatus = CREATED;
     }
 
     public Long getId() {
@@ -121,28 +116,12 @@ public class Draft implements Serializable {
         this.draftFormat = draftFormat;
     }
 
-    public boolean isTurnOrderMovingTowardsDoublePick() {
-        return turnOrderMovingTowardsDoublePick;
-    }
-
-    public void setTurnOrderMovingTowardsDoublePick(boolean turnOrderMovingTowardsDoublePick) {
-        this.turnOrderMovingTowardsDoublePick = turnOrderMovingTowardsDoublePick;
-    }
-
     public List<Player> getDraftPlayers() {
         return draftPlayers;
     }
 
     public void setDraftPlayers(List<Player> draftPlayers) {
         this.draftPlayers = draftPlayers;
-    }
-
-    public int getDraftedCardsCount() {
-        return draftedCardsCount;
-    }
-
-    public void setDraftedCardsCount(int draftedCardsCount) {
-        this.draftedCardsCount = draftedCardsCount;
     }
 
     public int getRoundNumber() {
@@ -193,6 +172,14 @@ public class Draft implements Serializable {
         this.draftStatus = draftStatus;
     }
 
+    public Player getCurrentDrafter() {
+        if(this.getDraftStatus() == CREATED || this.getDraftStatus() == FINISHED) {
+            return this.getDraftPlayers().get(0);
+        } else {
+            return this.getDraftPlayers().get(this.getCurrentDraftIndex());
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if(this == o) {
@@ -217,9 +204,7 @@ public class Draft implements Serializable {
         this.name = draft.getName();
         this.league = draft.getLeague();
         this.draftFormat = draft.getDraftFormat();
-        this.turnOrderMovingTowardsDoublePick = draft.isTurnOrderMovingTowardsDoublePick();
         this.draftPlayers = draft.getDraftPlayers();
-        this.draftedCardsCount = draft.getDraftedCardsCount();
         this.roundNumber = draft.getRoundNumber();
         this.pickCount = draft.getPickCount();
         this.banList = draft.getBanList();
@@ -255,7 +240,7 @@ public class Draft implements Serializable {
                 DraftedCard draftedCard = new DraftedCard(card, new Date(), playerId);
 
                 this.getDraftedCards().add(draftedCard);
-                this.advanceDraft(playerId);
+                this.advanceDraft();
             } else {
                 //Don't draft cards if the player isn't in your draft
             }
@@ -276,15 +261,68 @@ public class Draft implements Serializable {
     }
 
     private void incrementDraftCounters() {
-        this.setDraftedCardsCount(this.getDraftedCardsCount() + 1);
         this.setPickCount(this.getPickCount() + 1);
     }
 
-    private void advanceDraft(Long lastDrafterId) {
+    public void advanceDraft() {
         this.incrementDraftCounters();
 
-        //Check if count has advanced enough to change draft direction
-        //Advance round count if needed
-        //Pick next drafter
+        if(this.shouldIncrementRoundCounter()) {
+            if(this.getRoundNumber() >= this.getRoundLimit()) {
+                this.setDraftStatus(FINISHED);
+            } else {
+                this.setRoundNumber(this.getRoundNumber() + 1);
+                this.reorderPlayers();
+            }
+        }
+    }
+
+    private void reorderPlayers() {
+        List<Player> players = this.getDraftPlayers();
+
+        Player firstPlayer = players.remove(0);
+        players.add(firstPlayer);
+
+        this.setDraftPlayers(players);
+    }
+
+    public int getCurrentDraftIndex() {
+        switch (this.getDraftFormat()) {
+            case ROTISSERIE_ROTATING_SNAKE:
+                return getCurrentDraftIndex_RotisserieRotatingSnake();
+            case STANDARD:
+            case ROCHESTER:
+            case ROTISSERIE:
+                return 0;
+            default:
+                return 0;
+        }
+    }
+
+    public int getCurrentDraftIndex_RotisserieRotatingSnake() {
+        int playerCount = this.getDraftPlayers().size();
+        int pickIndex = (this.getPickCount() < this.picksPerRound()) ? (this.getPickCount() - 1) : (this.getPickCount() - 1) % this.picksPerRound();
+
+        if(pickIndex < playerCount) {
+            return pickIndex;
+        } else {
+            return (playerCount - (pickIndex - playerCount)) - 1;
+        }
+    }
+
+    private int picksPerRound() {
+        return this.getDraftPlayers().size() * 2;
+    }
+
+    private int getPickStartIndex() {
+        if(this.getRoundNumber() <= this.getDraftPlayers().size()) {
+            return this.getRoundNumber();
+        } else {
+            return this.getRoundNumber() % this.getDraftPlayers().size();
+        }
+    }
+
+    private boolean shouldIncrementRoundCounter() {
+        return this.getPickCount() > this.getRoundNumber() * this.picksPerRound();
     }
 }
