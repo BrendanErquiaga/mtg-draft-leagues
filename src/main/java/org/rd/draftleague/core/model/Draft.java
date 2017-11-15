@@ -52,6 +52,7 @@ public class Draft implements Serializable {
     private CardList banList;
 
     @OneToMany(cascade=CascadeType.ALL)
+    @OrderBy("draftTime asc")
     private List<DraftedCard> draftedCards;
 
     @Enumerated(EnumType.STRING)
@@ -234,17 +235,21 @@ public class Draft implements Serializable {
     public void draftCardForPlayer(Card card, Long playerId) {
         if(this.getDraftStatus() == DraftLeagueConstants.DraftStatus.DRAFTING) {
             if(playerIsInDraft(playerId)) {
-                if(!this.banList.listContainsCard(card)) {
-                    if(cardIsFree(card)) {
-                        DraftedCard draftedCard = new DraftedCard(card, new Date(), playerId);
+                if(playerId == this.getCurrentDrafter().getId()) {
+                    if(!this.banList.listContainsCard(card)) {
+                        if(cardIsFree(card)) {
+                            DraftedCard draftedCard = new DraftedCard(card, new Date(), playerId);
 
-                        this.getDraftedCards().add(draftedCard);
-                        this.advanceDraft();
+                            this.getDraftedCards().add(draftedCard);
+                            this.advanceDraft();
+                        } else {
+                            //Don't draft cards that have already been drafted...
+                        }
                     } else {
-                        //Don't draft cards that have already been drafted...
+                        //Don't draft cards that are banned...
                     }
-                } else {
-                    //Don't draft cards that are banned...
+                } else  {
+                    //Don't draft if it's not the draftees turn
                 }
             } else {
                 //Don't draft cards if the player isn't in your draft

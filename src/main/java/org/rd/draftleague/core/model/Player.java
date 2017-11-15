@@ -41,7 +41,7 @@ public class Player implements Serializable {
     private List<League> leagues;
 
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"league", "turnOrderMovingTowardsDoublePick", "draftPlayers", "pickCount", "draftedCards"})
+    @JsonIgnoreProperties({"league", "draftPlayers", "pickCount", "draftedCards"})
     private List<Draft> drafts;
 
     public Player() {
