@@ -61,10 +61,16 @@ typings/
 .next
 
 # Compiled Typescript
-**/examples/**/*.js
-**/examples/**/*.d.ts
-**/provisioned/**/*.js
-**/provisioned/**/*.d.ts
+**/src/**/*.js
+**/src/**/*.d.ts
+**/test/**/*.js
+**/test/**/*.d.ts
+
+index.js
+index.d.ts
+
+dist/*
+dist
 
 .DS_Store
 

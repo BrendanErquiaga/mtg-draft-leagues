@@ -1,0 +1,24 @@
+{
+  "name": "api-lambda-crud-s3",
+  "version": "1.0.0",
+  "description": "Running an API Gateway with four Lambdas to do CRUD operations on S3",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=jest.unit.config.js --runInBand"
+  },
+  "devDependencies": {
+    "@types/node": "^10.17.0",
+    "@aws-cdk/aws-apigateway": "1.21.1",
+    "@aws-cdk/aws-lambda": "1.21.1",
+    "@aws-cdk/aws-s3": "1.21.1",
+    "@aws-cdk/core": "1.21.1",
+    "typescript": "~3.7.2"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.636.0"
+  }
+}
