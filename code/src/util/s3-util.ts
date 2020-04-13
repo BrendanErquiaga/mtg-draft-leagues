@@ -12,3 +12,14 @@ export async function SaveItemToS3(bucketName: string, itemKey: string, itemStri
 
   return s3Response;
 }
+
+export async function GetItemFromS3(bucketName: string, itemKey: string, s3Client: S3) {
+  let getObjectRequest: S3.GetObjectRequest = {
+    Bucket: bucketName,
+    Key: itemKey + ITEM_KEY_SUFFIX
+  }
+
+  let s3Response = await s3Client.getObject(getObjectRequest).promise();
+
+  return s3Response;
+}

@@ -54,3 +54,6 @@ After building your TypeScript code, you will be able to run the CDK toolkits co
 
     $ cdk diff
     <shows diff against deployed stack>
+
+
+`npm run build && BUCKET_NAME=mtg-drafting-api-mtgdrafts2388d40a-3q2cqk1wfx0f npm run test`

@@ -6,7 +6,7 @@ const s3Client: S3 = new S3();
 const BUCKET_NAME: string = process.env.BUCKET_NAME || '';
 
 
-//POST at api/items
+//POST at api/draft
 export const handler = async (event: any = {}): Promise<any> => {
   try {
     let cardList:Card[] = CreateCardList(event.body);
@@ -19,7 +19,6 @@ export const handler = async (event: any = {}): Promise<any> => {
 
     return { statusCode: 200, body: createdDraft.getHTTPString() };
   } catch (error) {
-    console.error(error);
     return { statusCode: 500, body: JSON.stringify(error) };
   }
 };

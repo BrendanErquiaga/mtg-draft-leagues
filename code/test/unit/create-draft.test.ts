@@ -1,6 +1,6 @@
-const lambda = require('../../src/lambdas/create-draft-lambda');
+describe.skip('Tests put one draft object', function () {
+  const lambda = require('../../src/lambdas/create-draft-lambda');
 
-describe('Tests get one object', function () {
   let event: any;
   beforeAll(() => {
     jest.resetModules();
