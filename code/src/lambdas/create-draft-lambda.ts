@@ -15,12 +15,24 @@ export const handler = async (event: any = {}): Promise<any> => {
       cardList: cardList
     });
 
-    let s3Response = await SaveItemToS3(BUCKET_NAME, createdDraft.getS3Key(), createdDraft.getS3String(), s3Client);
+    await SaveDraftToS3(createdDraft);
 
-    //TODO - Return Link to draft
-    return { statusCode: 200, body: JSON.stringify(s3Response) };
+    return { statusCode: 200, body: createdDraft.getHTTPString() };
   } catch (error) {
     console.error(error);
     return { statusCode: 500, body: JSON.stringify(error) };
   }
 };
+
+async function SaveDraftToS3(draft:Draft) {
+  let savePromises = [];
+  let saveDraftPromise = SaveItemToS3(BUCKET_NAME, draft.getS3Key(), draft.getS3String(), s3Client);
+  savePromises.push(saveDraftPromise);
+
+  draft.packs.forEach(pack => {
+    let savePackPromise = SaveItemToS3(BUCKET_NAME, pack.getS3Key(draft.name), pack.getS3String(), s3Client);
+    savePromises.push(savePackPromise);
+  })
+
+  await Promise.all(savePromises);
+}

@@ -1,12 +1,28 @@
-import { Card, Pack, DEFAULT_SHUFFLE_COUNT } from "../models";
+import { Card, Pack, DEFAULT_SHUFFLE_COUNT, WORDS_IN_DRAFT_NAME, WORDS_IN_PACK_NAME } from "../models";
 import * as uuid from 'uuid';
+// @ts-ignore
+import * as randomWords from 'random-words';
 
-export function GetRandomDraftName(): string {
-  return uuid.v4();
+export function GetRandomDraftName(): string {  
+  return GenerateRandomName(WORDS_IN_DRAFT_NAME);
 }
 
 export function GetRandomPackName(): string {
-  return uuid.v4();
+  return GenerateRandomName(WORDS_IN_PACK_NAME);
+}
+
+function GenerateRandomName(numOfWords:number) {
+  let words = randomWords(numOfWords);
+  let randomName = "";
+  for (let i = 0; i < words.length; i++) {
+    randomName += words[i];
+
+    if (i < words.length - 1) {
+      randomName += '-';
+    }
+  }
+
+  return randomName;
 }
 
 export function CreateCardList(cardInputString:string, cardSeparatorChar?:string):Card[] {
@@ -76,4 +92,14 @@ function CardShuffle(cards: Card[]): Card[] {
   }
 
   return cards;
+}
+
+export function GetPackNames(packs:Pack[]):string[] {
+  let packNames:string[] = [];
+
+  packs.forEach(pack => {
+    packNames.push(pack.name);
+  });
+
+  return packNames;
 }
